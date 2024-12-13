@@ -124,7 +124,7 @@ whatsNew = "새로운 기능"
 updateReleaseNotes = "업데이트 릴리스 정보"
 
 [ejs.waiting]
-waitingText = "Microsoft 기다리는 중.."
+waitingText = "Microsoft를 기다리는 중.."
 
 [ejs.welcome]
 continueButton = "계속"
