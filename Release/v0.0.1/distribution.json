@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "0.0.1",
   "rss": "<LINK TO RSS FEED>",
   "discord": {
     "clientId": "<FILL IN OR REMOVE DISCORD OBJECT>",
@@ -12,7 +12,7 @@
       "name": "SpearfishForest4 (Minecraft 1.20.1)",
       "description": "SpearfishForest4 Running Minecraft 1.20.1 (Forge v47.2.20)",
       "icon": null,
-      "version": "1.0.0",
+      "version": "0.0.1",
       "address": "localhost:25565",
       "minecraftVersion": "1.20.1",
       "discord": {

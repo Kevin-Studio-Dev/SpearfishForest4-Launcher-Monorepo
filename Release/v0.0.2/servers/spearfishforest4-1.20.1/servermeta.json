@@ -1,7 +1,7 @@
 {
   "$schema": "file:///Users/hellosunghyun/Documents/Github/SpearfishForest4-Launcher-Monorepo/Release/v0.0.2/schemas/ServerMetaSchema.schema.json",
   "meta": {
-    "version": "1.0.0",
+    "version": "0.0.2",
     "name": "spearfishforest4 (Minecraft 1.20.1)",
     "description": "spearfishforest4 Running Minecraft 1.20.1 (Forge v47.2.20)",
     "icon": "",

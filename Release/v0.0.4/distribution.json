@@ -1,10 +1,10 @@
 {
-  "version": "1.0.0",
-  "rss": "<LINK TO RSS FEED>",
+  "version": "0.0.4",
+  "rss": "https://publish.spearforest.spearfish.mfhz.me/latest/rss.xml",
   "discord": {
-    "clientId": "<FILL IN OR REMOVE DISCORD OBJECT>",
-    "smallImageText": "<FILL IN OR REMOVE DISCORD OBJECT>",
-    "smallImageKey": "<FILL IN OR REMOVE DISCORD OBJECT>"
+    "clientId": "1313116004716511322",
+    "smallImageText": "SpearfishForest4",
+    "smallImageKey": "icon"
   },
   "servers": [
     {
@@ -12,7 +12,7 @@
       "name": "spearfishforest4 (Minecraft 1.20.1)",
       "description": "spearfishforest4 Running Minecraft 1.20.1 (Forge v47.2.20)",
       "icon": null,
-      "version": "1.0.0",
+      "version": "0.0.4",
       "address": "proxy.spearforest.spearfish.mfhz.me:10000",
       "minecraftVersion": "1.20.1",
       "discord": {
