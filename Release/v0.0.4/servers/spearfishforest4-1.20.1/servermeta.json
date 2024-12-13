@@ -4,7 +4,7 @@
     "version": "0.0.4",
     "name": "spearfishforest4 (Minecraft 1.20.1)",
     "description": "spearfishforest4 Running Minecraft 1.20.1 (Forge v47.2.20)",
-    "icon": "icon.png",
+    "icon": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/spearfishforest4-1.20.1/icon.png",
     "address": "proxy.spearforest.spearfish.mfhz.me:10000",
     "discord": {
       "shortId": "SpearfishForest4",
