@@ -241,10 +241,23 @@ function createWindow() {
     remoteMain.enable(win.webContents)
 
     const data = {
-        bkid: Math.floor((Math.random() * fs.readdirSync(path.join(__dirname, 'app', 'assets', 'images', 'backgrounds')).length)),
-        lang: (str, placeHolders) => LangLoader.queryEJS(str, placeHolders)
+        bkid: Math.floor((Math.random() * fs.readdirSync(path.join(__dirname, 'app', 'assets', 'images', 'backgrounds')).length)) || 0,
+        lang: (str, placeHolders) => {
+            try {
+                return LangLoader.queryEJS(str, placeHolders) || ''
+            } catch (err) {
+                console.error('Language loading error:', err)
+                return ''
+            }
+        }
     }
-    Object.entries(data).forEach(([key, val]) => ejse.data(key, val))
+    Object.entries(data).forEach(([key, val]) => {
+        try {
+            ejse.data(key, val)
+        } catch (err) {
+            console.error('EJS data setting error:', err)
+        }
+    })
 
     win.loadURL(pathToFileURL(path.join(__dirname, 'app', 'app.ejs')).toString())
 

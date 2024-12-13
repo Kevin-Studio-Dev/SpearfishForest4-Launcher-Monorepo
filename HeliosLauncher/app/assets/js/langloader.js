@@ -47,10 +47,9 @@ exports.queryEJS = function(id, placeHolders){
 }
 
 exports.setupLanguage = function(){
-    // Load Default Language (English)
-    exports.loadLanguage('en_US')
-    // Load Korean Language
+    // 기본 언어를 한국어로 설정
     exports.loadLanguage('ko_KR')
-    // Load Custom Language File for Launcher Customizer
+    
+    // 사용자 정의 설정이 있다면 로드
     exports.loadLanguage('_custom')
 }
