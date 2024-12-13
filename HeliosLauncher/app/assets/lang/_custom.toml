@@ -1,20 +1,17 @@
 # Custom Language File for Launcher Customizer
 
 [ejs.app]
-title = "Helios Launcher"
+title = "SpearfishForest4"
 
 [ejs.landing]
-mediaGitHubURL = "https://github.com/dscalzi/HeliosLauncher"
-mediaTwitterURL = "#"
-mediaInstagramURL = "#"
-mediaYouTubeURL = "#"
-mediaDiscordURL = "https://discord.gg/zNWUXdt"
+mediaGitHubURL = "https://github.com/hellosunghyun"
+mediaDiscordURL = "https://discord.gg/WZuRrrAC"
 
 [ejs.settings]
 sourceGithubLink = "https://github.com/dscalZi/HeliosLauncher"
 supportLink = "https://github.com/dscalZi/HeliosLauncher/issues"
 
 [ejs.welcome]
-welcomeHeader = "WELCOME TO WESTEROSCRAFT"
-welcomeDescription = "Our mission is to recreate the universe imagined by author George RR Martin in his fantasy series, A Song of Ice and Fire.  Through the collaborative effort of thousands of community members, we have sought to create Westeros as accurately and precisely as possible within Minecraft.  The world we are creating is yours to explore.  Journey from Dorne to Castle Black, and if you aren’t afraid, beyond the Wall itself, but best not delay.  As the words of House Stark ominously warn: Winter is Coming."
-welcomeDescCTA = "You are just a few clicks away from Westeros."
+welcomeHeader = "청새치숲에 오신 것을 환영합니다, 너굴!"
+welcomeDescription = "호오오~ 안녕하시다너굴!<br>저는 청새치의 숲 마을 대표 너굴이라너굴~<br>여러분을 이 특별한 마을에서 만나게 되어 정말 기쁘다너굴!<br>우리 마을에는 재미있는 것들이 가득하다너굴~<br>여러분만의 집도 짓고, 친구들과 함께 농사도 짓고, 낚시도 하면서 즐거운 시간을 보내보시라너굴!<br>자, 이제 여러분의 새로운 모험이 시작된다너굴~!"
+welcomeDescCTA = "청새치숲에서 여러분만의 이야기를 만들어보시라너굴~!"

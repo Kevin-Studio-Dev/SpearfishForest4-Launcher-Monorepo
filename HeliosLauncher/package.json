@@ -1,13 +1,13 @@
 {
-  "name": "SpearfishForest4-Launcher",
-  "version": "0.0.1",
-  "productName": "SpearfishForest4-Launcher",
-  "description": "SpearfishForest4-Launcher",
-  "author": "Sunghyun Kim",
+  "name": "helioslauncher",
+  "version": "2.2.1",
+  "productName": "Helios Launcher",
+  "description": "Modded Minecraft Launcher",
+  "author": "Daniel Scalzi (https://github.com/dscalzi/)",
   "license": "UNLICENSED",
-  "homepage": "https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepor",
+  "homepage": "https://github.com/dscalzi/HeliosLauncher",
   "bugs": {
-    "url": "https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepor/issues"
+    "url": "https://github.com/dscalzi/HeliosLauncher/issues"
   },
   "private": true,
   "main": "index.js",
@@ -46,6 +46,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo.git"
+    "url": "git+https://github.com/dscalzi/HeliosLauncher.git"
   }
 }
