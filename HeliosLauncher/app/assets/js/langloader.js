@@ -6,7 +6,21 @@ const merge = require('lodash.merge')
 let lang
 
 exports.loadLanguage = function(id){
-    lang = merge(lang || {}, toml.parse(fs.readFileSync(path.join(__dirname, '..', 'lang', `${id}.toml`))) || {})
+    try {
+        const langPath = path.join(__dirname, '..', 'lang', `${id}.toml`)
+        if(fs.existsSync(langPath)) {
+            lang = merge(lang || {}, toml.parse(fs.readFileSync(langPath)) || {})
+        } else {
+            console.error(`Language file not found: ${langPath}`)
+            // 기본 언어로 fallback
+            const defaultLangPath = path.join(__dirname, '..', 'lang', 'ko_KR.toml')
+            if(fs.existsSync(defaultLangPath)) {
+                lang = merge(lang || {}, toml.parse(fs.readFileSync(defaultLangPath)) || {})
+            }
+        }
+    } catch(err) {
+        console.error('Error loading language file:', err)
+    }
 }
 
 exports.query = function(id, placeHolders){
