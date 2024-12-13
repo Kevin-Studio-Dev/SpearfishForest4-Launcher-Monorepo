@@ -1,11 +1,11 @@
 {
-  "$schema": "file:///Users/hellosunghyun/Documents/Github/SpearfishForest4-Launcher-Monorepo/Release/v0.0.3/schemas/DistroMetaSchema.schema.json",
+  "$schema": "file:///Users/hellosunghyun/Documents/Github/SpearfishForest4-Launcher-Monorepo/Release/v0.0.4/schemas/DistroMetaSchema.schema.json",
   "meta": {
-    "rss": "<LINK TO RSS FEED>",
+    "rss": "https://publish.spearforest.spearfish.mfhz.me/latest/rss.xml",
     "discord": {
-      "clientId": "<FILL IN OR REMOVE DISCORD OBJECT>",
-      "smallImageText": "<FILL IN OR REMOVE DISCORD OBJECT>",
-      "smallImageKey": "<FILL IN OR REMOVE DISCORD OBJECT>"
+      "clientId": "1313116004716511322",
+      "smallImageText": "SpearfishForest4",
+      "smallImageKey": "icon"
     }
   }
 }
