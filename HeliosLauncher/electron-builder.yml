@@ -1,8 +1,8 @@
-appId: 'helioslauncher'
-productName: 'Helios Launcher'
-artifactName: '${productName}-setup-${version}.${ext}'
+appId: 'SpearfishForest4-Launcher'
+productName: 'SpearfishForest4-Launcher'
+artifactName: '${productName}-setup.${ext}'
 
-copyright: 'Copyright © 2018-2024 Daniel Scalzi'
+copyright: 'Copyright © 2024 SpearfishForest4'
 
 asar: true
 compression: 'maximum'
@@ -21,7 +21,7 @@ win:
 
 # Windows Installer Configuration
 nsis:
-  oneClick: false
+  oneClick: true
   perMachine: false
   allowElevation: true
   allowToChangeInstallationDirectory: true
@@ -33,16 +33,16 @@ mac:
       arch:
         - 'x64'
         - 'arm64'
-  artifactName: '${productName}-setup-${version}-${arch}.${ext}'
+  artifactName: '${productName}-setup-${arch}.${ext}'
   category: 'public.app-category.games'
 
 # Linux Configuration
 linux: 
   target: 'AppImage'
-  maintainer: 'Daniel Scalzi'
-  vendor: 'Daniel Scalzi'
-  synopsis: 'Modded Minecraft Launcher'
-  description: 'Custom launcher which allows users to join modded servers. All mods, configurations, and updates are handled automatically.'
+  maintainer: 'Sunghyun Kim'
+  vendor: 'SpearfishForest4'
+  synopsis: 'SpearfishForest4-Launcher'
+  description: 'SpearfishForest4-Launcher'
   category: 'Game'
 
 
