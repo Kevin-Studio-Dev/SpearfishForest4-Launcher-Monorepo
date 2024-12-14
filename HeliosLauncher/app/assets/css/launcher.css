@@ -3230,6 +3230,8 @@ input:checked + .toggleSwitchSlider:before {
     display: flex;
     align-items: center;
     cursor: pointer;
+    line-height: 24px;
+    margin-left: 10px;
 }
 
 /* Icon which displays the status of the mojang services. */
@@ -3989,6 +3991,37 @@ input:checked + .toggleSwitchSlider:before {
     border-radius: 50%;
     margin-left: 8px;
     transform: translateY(1px);
+}
+
+.mojang_status_wrapper {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    line-height: 24px;
+    font-size: 14px;
+    color: #848484;
+}
+
+.mojang_status_indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-left: 5px;
+    background-color: #848484;
+    display: inline-block;
+}
+
+/* 상태에 따른 색상 */
+.mojang_status_indicator.online {
+    background-color: #85c926;
+}
+
+.mojang_status_indicator.offline {
+    background-color: #f74b4b;
+}
+
+.mojang_status_indicator.partial {
+    background-color: #f2b233;
 }
 
 /* 업데이트 팝업 스타일 */
