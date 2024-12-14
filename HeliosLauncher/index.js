@@ -2,7 +2,7 @@ const remoteMain = require('@electron/remote/main')
 remoteMain.initialize()
 
 // Requirements
-const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, Menu, shell, dialog } = require('electron')
 const autoUpdater                       = require('electron-updater').autoUpdater
 const ejse                              = require('ejs-electron')
 const fs                                = require('fs')
@@ -27,30 +27,51 @@ function initAutoUpdater(event, data) {
     autoUpdater.autoDownload = true;  // 자동 다운로드 활성화
     autoUpdater.autoInstallOnAppQuit = true;  // 앱 종료 시 자동 설치 활성화
 
+    let updateReady = false;
+
     autoUpdater.on('error', (err) => {
         log.error('AutoUpdater 오류:', err)
-        event.sender.send('autoUpdateNotification', 'error', err)
+        dialog.showErrorBox('오류', '업데이트 중 오류가 발생했습니다: ' + err)
+    })
+
+    autoUpdater.on('update-downloaded', (info) => {
+        log.info('업데이트 다운로드 완료:', info)
+        updateReady = true;
+        win.webContents.send('updateReady')
     })
 
     autoUpdater.on('update-available', (info) => {
-        if (!updateDownloaded) {
-            event.sender.send('autoUpdateNotification', 'update-available', info)
-            win.webContents.send('updateAvailable', info.version)
-        }
+        log.info('업데이트 가능:', info)
+        win.webContents.send('updateAvailable', info)
     })
 
     autoUpdater.on('download-progress', (progressObj) => {
-        win.webContents.send('updateDownloadProgress', progressObj.percent)
-    })
-
-    autoUpdater.on('update-downloaded', () => {
-        updateDownloaded = true
-        event.sender.send('autoUpdateNotification', 'update-downloaded')
-        win.webContents.send('updateDownloaded')
+        win.webContents.send('updateDownloadProgress', progressObj)
     })
 
     autoUpdater.on('update-not-available', (info) => {
         event.sender.send('autoUpdateNotification', 'update-not-available', info)
+    })
+
+    // 앱 종료 전 이벤트 처리
+    app.on('before-quit', (event) => {
+        if (updateReady) {
+            event.preventDefault();
+            dialog.showMessageBox({
+                type: 'info',
+                title: '업데이트 설치',
+                message: '다운로드된 업데이트가 있습니다. 지금 설치하시겠습니까?',
+                buttons: ['지금 설치', '나중에'],
+                defaultId: 0,
+                cancelId: 1
+            }).then(result => {
+                if (result.response === 0) {
+                    autoUpdater.quitAndInstall(false, true)
+                } else {
+                    app.exit(0)
+                }
+            })
+        }
     })
 }
 
@@ -380,7 +401,18 @@ app.on('activate', () => {
 
 // 업데이트 수락 시 처리
 ipcMain.on('installUpdate', () => {
-    autoUpdater.quitAndInstall(true, true)
+    dialog.showMessageBox({
+        type: 'info',
+        title: '업데이트 설치',
+        message: '업데이트를 설치하려면 프로그램을 재시작해야 합니다. 지금 설치하시겠습니까?',
+        buttons: ['지금 설치', '나중에'],
+        defaultId: 0,
+        cancelId: 1
+    }).then(result => {
+        if (result.response === 0) {
+            autoUpdater.quitAndInstall(false, true)
+        }
+    })
 })
 
 // 앱 재시작
