@@ -29,17 +29,6 @@ jobs:
           VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        if: matrix.os == 'macos-latest'
-        uses: softprops/action-gh-release@v1
-        with:
-          name: Release v${{ steps.get-version.outputs.version }}
-          tag_name: v${{ steps.get-version.outputs.version }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -61,3 +50,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Create Release
+        if: matrix.os == 'macos-latest'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release v${{ steps.get-version.outputs.version }}
+          tag_name: v${{ steps.get-version.outputs.version }}
+          draft: false
+          prerelease: false
+          files: |
+            HeliosLauncher/dist/*.dmg
+            HeliosLauncher/dist/*.exe
+            HeliosLauncher/dist/latest*.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
