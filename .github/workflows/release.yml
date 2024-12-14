@@ -5,6 +5,7 @@ on:
       - 'HeliosLauncher/package.json'
     branches:
       - master
+      - 'prerelease/*'
     tags-ignore:
       - '*'
 
@@ -27,7 +28,10 @@ jobs:
         shell: bash
         run: |
           VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
+          BRANCH=${GITHUB_REF#refs/heads/}
+          IS_PRERELEASE=${{ contains(github.ref, 'prerelease/') }}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -69,7 +73,9 @@ jobs:
         shell: bash
         run: |
           VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
+          IS_PRERELEASE=${{ contains(github.ref, 'prerelease/') }}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
 
       - name: Download all artifacts
         uses: actions/download-artifact@v3
@@ -77,19 +83,28 @@ jobs:
           path: artifacts
 
       - name: Delete existing latest tag
+        if: ${{ !steps.get-version.outputs.is_prerelease }}
         run: |
           git tag -d latest || true
           git push origin :refs/tags/latest || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Delete existing prerelease tag
+        if: ${{ steps.get-version.outputs.is_prerelease }}
+        run: |
+          git tag -d prerelease || true
+          git push origin :refs/tags/prerelease || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release v${{ steps.get-version.outputs.version }}
-          tag_name: latest
+          name: ${{ steps.get-version.outputs.is_prerelease && 'Pre-release' || 'Release' }} v${{ steps.get-version.outputs.version }}
+          tag_name: ${{ steps.get-version.outputs.is_prerelease && 'prerelease' || 'latest' }}
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.get-version.outputs.is_prerelease }}
           files: |
             artifacts/dist-macos-latest/*
             artifacts/dist-windows-latest/*

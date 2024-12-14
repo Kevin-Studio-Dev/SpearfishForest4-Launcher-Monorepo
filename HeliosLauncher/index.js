@@ -26,6 +26,12 @@ autoUpdater.logger.transports.file.level = 'info'
 function initAutoUpdater() {
     autoUpdater.autoDownload = true
     autoUpdater.autoInstallOnAppQuit = true
+    
+    // 현재 버전이 사전 릴리즈인지 확인
+    const preRelComp = semver.prerelease(app.getVersion())
+    if(preRelComp != null && preRelComp.length > 0){
+        autoUpdater.allowPrerelease = true
+    }
 
     autoUpdater.on('error', (err) => {
         log.error('AutoUpdater 오류:', err)
@@ -33,10 +39,11 @@ function initAutoUpdater() {
 
     autoUpdater.on('update-available', (info) => {
         log.info('업데이트 가능:', info)
+        const isPrerelease = semver.prerelease(info.version) != null
         dialog.showMessageBox({
             type: 'info',
             title: '업데이트 다운로드',
-            message: '새로운 버전을 다운로드합니다.\n다운로드 완료 후 자동으로 재시작됩니다.',
+            message: `새로운 ${isPrerelease ? '사전 릴리즈' : ''} 버전(${info.version})을 다운로드합니다.\n다운로드 완료 후 자동으로 재시작됩니다.`,
             buttons: ['확인'],
             defaultId: 0
         })
