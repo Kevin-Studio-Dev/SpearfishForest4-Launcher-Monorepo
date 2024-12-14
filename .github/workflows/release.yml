@@ -28,14 +28,29 @@ jobs:
         shell: bash
         run: |
           VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
+          echo "GitHub Ref: $GITHUB_REF"
+          echo "GitHub Base Ref: $GITHUB_BASE_REF"
+          echo "GitHub Head Ref: $GITHUB_HEAD_REF"
+          
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          echo "Current branch: $BRANCH_NAME"
-          IS_PRERELEASE=false
+          echo "Branch Name: $BRANCH_NAME"
+          
+          # prerelease 브랜치 체크
           if [[ "$BRANCH_NAME" == prerelease/* ]]; then
+            echo "This is a prerelease branch"
             IS_PRERELEASE=true
+          else
+            echo "This is not a prerelease branch"
+            IS_PRERELEASE=false
           fi
+          
+          echo "Is Prerelease: $IS_PRERELEASE"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          
+          # package.json의 publish 설정 확인
+          echo "Current package.json publish settings:"
+          cat ./HeliosLauncher/package.json | grep -A 5 '"publish":'
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -95,14 +110,29 @@ jobs:
         shell: bash
         run: |
           VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
+          echo "GitHub Ref: $GITHUB_REF"
+          echo "GitHub Base Ref: $GITHUB_BASE_REF"
+          echo "GitHub Head Ref: $GITHUB_HEAD_REF"
+          
           BRANCH_NAME=${GITHUB_REF#refs/heads/}
-          echo "Current branch: $BRANCH_NAME"
-          IS_PRERELEASE=false
+          echo "Branch Name: $BRANCH_NAME"
+          
+          # prerelease 브랜치 체크
           if [[ "$BRANCH_NAME" == prerelease/* ]]; then
+            echo "This is a prerelease branch"
             IS_PRERELEASE=true
+          else
+            echo "This is not a prerelease branch"
+            IS_PRERELEASE=false
           fi
+          
+          echo "Is Prerelease: $IS_PRERELEASE"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          
+          # package.json의 publish 설정 확인
+          echo "Current package.json publish settings:"
+          cat ./HeliosLauncher/package.json | grep -A 5 '"publish":'
 
       - name: Download all artifacts
         uses: actions/download-artifact@v3
