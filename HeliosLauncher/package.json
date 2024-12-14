@@ -1,6 +1,6 @@
 {
   "name": "spearfishforest4",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "productName": "SpearfishForest4",
   "description": "Modded Minecraft Launcher",
   "author": "Sunghyun Kim",
@@ -72,8 +72,7 @@
       "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
       "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
       "!**/{appveyor.yml,.travis.yml,circle.yml}",
-      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
-      "!**/builder-debug.yml"
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
     ],
     "mac": {
       "category": "public.app-category.games",

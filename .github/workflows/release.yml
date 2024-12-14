@@ -89,14 +89,6 @@ jobs:
         with:
           path: artifacts
 
-      - name: Delete existing latest tag
-        if: ${{ !steps.get-version.outputs.is_prerelease }}
-        run: |
-          git tag -d latest || true
-          git push origin :refs/tags/latest || true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Delete existing prerelease tag
         if: ${{ steps.get-version.outputs.is_prerelease }}
         run: |
@@ -118,6 +110,26 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # latest 태그 업데이트 (정식 릴리즈일 때만)
+      - name: Update Latest Tag
+        if: ${{ !steps.get-version.outputs.is_prerelease }}
+        run: |
+          git tag -f latest
+          git push -f origin latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # latest 릴리즈 생성 전에 기존 자산 삭제
+      - name: Delete Latest Release Assets
+        if: ${{ !steps.get-version.outputs.is_prerelease }}
+        uses: dev-drprasad/delete-older-releases@v0.2.1
+        with:
+          keep_latest: 0
+          delete_tag_pattern: latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # latest 릴리즈 생성
       - name: Create Latest Release
         if: ${{ !steps.get-version.outputs.is_prerelease }}
         uses: softprops/action-gh-release@v1
@@ -129,6 +141,5 @@ jobs:
           files: |
             artifacts/dist-macos-latest/*
             artifacts/dist-windows-latest/*
-          delete_assets: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

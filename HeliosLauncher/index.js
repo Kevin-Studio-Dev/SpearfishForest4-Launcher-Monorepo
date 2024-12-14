@@ -35,6 +35,12 @@ function initAutoUpdater() {
 
     autoUpdater.on('error', (err) => {
         log.error('AutoUpdater 오류:', err)
+        win.webContents.send('autoUpdateNotification', 'error', err)
+    })
+
+    autoUpdater.on('update-not-available', () => {
+        log.info('업데이트 없음')
+        win.webContents.send('autoUpdateNotification', 'noUpdate')
     })
 
     autoUpdater.on('update-available', (info) => {
@@ -444,4 +450,10 @@ ipcMain.on('checkForUpdates', () => {
 
 autoUpdater.on('error', (err) => {
     log.error('AutoUpdater 오류:', err)
+    win.webContents.send('autoUpdateNotification', 'error', err)
+})
+
+autoUpdater.on('update-not-available', () => {
+    log.info('업데이트 없음')
+    win.webContents.send('autoUpdateNotification', 'noUpdate')
 })
