@@ -43,6 +43,13 @@ jobs:
           cd HeliosLauncher
           npm install
 
+      - name: Update release type for prerelease
+        if: ${{ contains(github.ref, 'prerelease/') }}
+        run: |
+          cd HeliosLauncher
+          jq '.build.publish[0].releaseType = "prerelease"' package.json > package.json.tmp
+          mv package.json.tmp package.json
+
       - name: Build/Release Electron app
         uses: samuelmeuli/action-electron-builder@v1
         with:

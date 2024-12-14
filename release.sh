@@ -19,6 +19,10 @@ if [ "$release_type" = "1" ]; then
         git checkout master
     fi
     branch_prefix=""
+    # releaseType을 release로 설정
+    cd HeliosLauncher
+    jq '.build.publish[0].releaseType = "release"' package.json > package.json.tmp && mv package.json.tmp package.json
+    cd ..
 else
     if [[ "$current_branch" != prerelease/* ]]; then
         echo "새로운 사전 릴리즈 브랜치를 생성합니다..."
@@ -27,6 +31,10 @@ else
         git checkout -b "prerelease/$branch_timestamp"
     fi
     branch_prefix="beta."
+    # releaseType을 prerelease로 설정
+    cd HeliosLauncher
+    jq '.build.publish[0].releaseType = "prerelease"' package.json > package.json.tmp && mv package.json.tmp package.json
+    cd ..
 fi
 
 # 현재 버전 가져오기
@@ -35,8 +43,16 @@ echo "현재 버전: v$current_version"
 
 # 새 버전 입력받기
 if [ "$release_type" = "1" ]; then
-    read -p "새 버전을 입력하세요 (예: 1.0.0): " version_number
-    new_version="$version_number"
+    read -p "새 버전을 입력하세요 (엔터: 패치 버전 자동 증가) (현재: $current_version): " version_number
+    if [ -z "$version_number" ]; then
+        # 현재 버전을 . 기준으로 분리
+        IFS='.' read -r major minor patch <<< "$current_version"
+        # 패치 버전 증가
+        new_patch=$((patch + 1))
+        new_version="$major.$minor.$new_patch"
+    else
+        new_version="$version_number"
+    fi
 else
     read -p "새 버전을 입력하세요 (예: 1.0.0): " version_number
     new_version="$version_number-$branch_prefix$timestamp"
