@@ -18,3 +18,9 @@ exports.loadDistroAPI = function() {
     )
     exports.DistroAPI = api
 }
+
+exports.reloadDistroAPI = function() {
+    exports.loadDistroAPI()
+    // 배포 데이터 다시 로드
+    return exports.DistroAPI.getDistribution()
+}

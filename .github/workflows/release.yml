@@ -142,10 +142,10 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: ${{ steps.get-version.outputs.is_prerelease && format('Pre-release v{0}', steps.get-version.outputs.version) || format('Release v{0}', steps.get-version.outputs.version) }}
-          tag_name: ${{ steps.get-version.outputs.is_prerelease && 'prerelease' || format('v{0}', steps.get-version.outputs.version) }}
+          name: ${{ steps.get-version.outputs.is_prerelease == 'true' && format('Pre-release v{0}', steps.get-version.outputs.version) || format('Release v{0}', steps.get-version.outputs.version) }}
+          tag_name: ${{ steps.get-version.outputs.is_prerelease == 'true' && 'prerelease' || format('v{0}', steps.get-version.outputs.version) }}
           draft: false
-          prerelease: ${{ steps.get-version.outputs.is_prerelease }}
+          prerelease: ${{ steps.get-version.outputs.is_prerelease == 'true' }}
           files: |
             artifacts/dist-macos-latest/!(builder-debug.yml)
             artifacts/dist-windows-latest/!(builder-debug.yml)

@@ -3212,7 +3212,9 @@ input:checked + .toggleSwitchSlider:before {
 /* Maintains maximum width on the status bar. */
 #server_status_wrapper {
     display: inline-flex;
-    width: 75px;
+    width: auto; /* 고정 너비 제거 */
+    min-width: 75px; /* 최소 너비 설정 */
+    align-items: center; /* 세로 중앙 정렬 */
 }
 
 /* Span which displays the player count of the selected server. */
@@ -3222,6 +3224,8 @@ input:checked + .toggleSwitchSlider:before {
     font-weight: 900;
     text-shadow: 0px 0px 20px #949494;
     margin-left: 10px;
+    white-space: nowrap; /* 줄바꿈 방지 */
+    display: inline-block; /* 인라인 블록으로 표시 */
 }
 
 /* Wrapper container for the mojang status bar. */

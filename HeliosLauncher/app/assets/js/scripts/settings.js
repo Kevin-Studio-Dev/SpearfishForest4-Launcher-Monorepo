@@ -1581,3 +1581,16 @@ async function prepareSettings(first = false) {
 
 // Prepare the settings UI on startup.
 //prepareSettings(true)
+
+// allowPrerelease 토글 이벤트 핸들러
+document.getElementById('settingsAllowPrerelease').addEventListener('change', (e) => {
+    const val = e.target.checked
+    ConfigManager.setAllowPrerelease(val)
+    
+    // DistroAPI 다시 로드
+    DistroManager.reloadDistroAPI().then(() => {
+        // 필요한 경우 UI 업데이트
+    }).catch((err) => {
+        console.error('Failed to reload distribution:', err)
+    })
+})

@@ -786,8 +786,9 @@ exports.getAllowPrerelease = function(def = false){
 /**
  * Change the status of Whether or not the launcher should download prerelease versions.
  * 
- * @param {boolean} launchDetached Whether or not the launcher should download prerelease versions.
+ * @param {boolean} allowPrerelease Whether or not the launcher should download prerelease versions.
  */
 exports.setAllowPrerelease = function(allowPrerelease){
     config.settings.launcher.allowPrerelease = allowPrerelease
+    exports.save()
 }
