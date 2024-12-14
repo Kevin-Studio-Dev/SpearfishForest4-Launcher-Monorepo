@@ -51,12 +51,27 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
-      - name: Create Release
+      - name: Create versioned Release
         if: matrix.os == 'macos-latest'
         uses: softprops/action-gh-release@v1
         with:
           name: Release v${{ steps.get-version.outputs.version }}
           tag_name: v${{ steps.get-version.outputs.version }}
+          draft: false
+          prerelease: false
+          files: |
+            HeliosLauncher/dist/*.dmg
+            HeliosLauncher/dist/*.exe
+            HeliosLauncher/dist/latest*.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update latest Release
+        if: matrix.os == 'macos-latest'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Latest Release
+          tag_name: latest
           draft: false
           prerelease: false
           files: |
