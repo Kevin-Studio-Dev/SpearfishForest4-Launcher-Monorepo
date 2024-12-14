@@ -109,11 +109,26 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: ${{ steps.get-version.outputs.is_prerelease && 'Pre-release' || 'Release' }} v${{ steps.get-version.outputs.version }}
-          tag_name: ${{ steps.get-version.outputs.is_prerelease && 'prerelease' || 'latest' }}
+          tag_name: ${{ steps.get-version.outputs.is_prerelease && 'prerelease' || format('v{0}', steps.get-version.outputs.version) }}
           draft: false
           prerelease: ${{ steps.get-version.outputs.is_prerelease }}
           files: |
             artifacts/dist-macos-latest/*
             artifacts/dist-windows-latest/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Latest Release
+        if: ${{ !steps.get-version.outputs.is_prerelease }}
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Latest Release v${{ steps.get-version.outputs.version }}
+          tag_name: latest
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/dist-macos-latest/*
+            artifacts/dist-windows-latest/*
+          delete_assets: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
