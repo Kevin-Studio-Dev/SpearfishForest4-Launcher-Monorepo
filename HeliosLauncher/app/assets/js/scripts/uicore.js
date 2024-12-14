@@ -128,6 +128,32 @@ function showUpdateUI(info){
     }
 }
 
+// 업데이트 사용 가능 표시
+function showUpdateAvailable() {
+    const container = document.getElementById('updateAvailableContainer')
+    if (container) {
+        container.style.display = 'block'
+    }
+}
+
+// 업데이트 가능 숨기기
+function hideUpdateAvailable() {
+    const container = document.getElementById('updateAvailableContainer')
+    if (container) {
+        container.style.display = 'none'
+    }
+}
+
+// 업데이트 확인 시 표시
+ipcRenderer.on('updateAvailable', (event, version) => {
+    showUpdateAvailable()
+})
+
+// 업데이트 완료 시 숨기기
+ipcRenderer.on('updateDownloaded', () => {
+    hideUpdateAvailable()
+})
+
 // 업데이트 알림 팝업 표시
 function showUpdatePopup(newVersion) {
     const modalContainer = document.createElement('div')
@@ -192,11 +218,6 @@ ipcRenderer.on('updateDownloaded', () => {
     setTimeout(() => {
         ipcRenderer.send('restartApp')
     }, 3000)
-})
-
-// IPC 이벤트 리스너 등록
-ipcRenderer.on('updateAvailable', (event, version) => {
-    showUpdatePopup(version)
 })
 
 document.addEventListener('readystatechange', function () {

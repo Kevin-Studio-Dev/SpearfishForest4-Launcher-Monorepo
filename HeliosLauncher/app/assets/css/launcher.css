@@ -3228,6 +3228,7 @@ input:checked + .toggleSwitchSlider:before {
 #mojangStatusWrapper {
     position: relative;
     display: flex;
+    align-items: center;
     cursor: pointer;
 }
 
@@ -3237,6 +3238,7 @@ input:checked + .toggleSwitchSlider:before {
     color: #848484;
     margin-left: 15px;
     font-family: 'sans-serif';
+    vertical-align: middle;
 }
 
 /* Tooltip which displays more details about the mojang statuses. */
@@ -3310,6 +3312,7 @@ input:checked + .toggleSwitchSlider:before {
 /* Wrapper container for mojang service information. */
 .mojangStatusContainer {
     display: flex;
+    align-items: center;
 }
 
 /* Displays the name of the mojang service. */
@@ -3326,6 +3329,7 @@ input:checked + .toggleSwitchSlider:before {
     margin-right: 10px;
     font-size: 18.5px;
     color: #848484;
+    vertical-align: middle;
 }
 
 /* * *

@@ -22,26 +22,23 @@ let updateDownloaded = false;
 autoUpdater.logger = log
 autoUpdater.logger.transports.file.level = 'info'
 
-// Setup auto updater.
+// 자동 업데이트 설정
 function initAutoUpdater(event, data) {
-    autoUpdater.allowPrerelease = true
-    autoUpdater.autoDownload = true
-    autoUpdater.autoInstallOnAppQuit = true
-    
-    if(isDev){
-        autoUpdater.autoInstallOnAppQuit = false
-        autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml')
-    }
+    autoUpdater.autoDownload = true;  // 자동 다운로드 활성화
+    autoUpdater.autoInstallOnAppQuit = true;  // 앱 종료 시 자동 설치 활성화
+
+    autoUpdater.on('error', (err) => {
+        log.error('AutoUpdater 오류:', err)
+        event.sender.send('autoUpdateNotification', 'error', err)
+    })
 
     autoUpdater.on('update-available', (info) => {
-        // 런처 시작 시에만 알림
         if (!updateDownloaded) {
             event.sender.send('autoUpdateNotification', 'update-available', info)
             win.webContents.send('updateAvailable', info.version)
         }
     })
 
-    // 업데이트 진행 상태 전송
     autoUpdater.on('download-progress', (progressObj) => {
         win.webContents.send('updateDownloadProgress', progressObj.percent)
     })
@@ -55,20 +52,6 @@ function initAutoUpdater(event, data) {
     autoUpdater.on('update-not-available', (info) => {
         event.sender.send('autoUpdateNotification', 'update-not-available', info)
     })
-    autoUpdater.on('checking-for-update', () => {
-        event.sender.send('autoUpdateNotification', 'checking-for-update')
-    })
-    autoUpdater.on('error', (err) => {
-        event.sender.send('autoUpdateNotification', 'realerror', err)
-    })
-
-    // 1시간마다 업데이트 확인
-    setInterval(() => {
-        autoUpdater.checkForUpdates()
-    }, 3600000)
-    
-    // 초기 업데이트 확인
-    autoUpdater.checkForUpdates()
 }
 
 // Open channel to listen for update actions.
@@ -395,11 +378,21 @@ app.on('activate', () => {
     }
 })
 
-// 앱 시작 시 업데이트 체크
+// 업데이트 수락 시 처리
+ipcMain.on('installUpdate', () => {
+    autoUpdater.quitAndInstall(true, true)
+})
+
+// 앱 재시작
+ipcMain.on('restartApp', () => {
+    autoUpdater.quitAndInstall(true, true)
+})
+
+// 앱 시작 시 업데이트 체크만 수행
 app.on('ready', () => {
     // 기존 ready 이벤트 핸들러 내용...
     
-    // 업데이트 체크 시작
+    // 업데이트 체크 시작 (개발 모드가 아닐 때만)
     if (!isDev) {
         autoUpdater.checkForUpdates()
         
@@ -408,16 +401,6 @@ app.on('ready', () => {
             autoUpdater.checkForUpdates()
         }, 3600000)
     }
-})
-
-// 업데이트 수락 시 처리
-ipcMain.on('installUpdate', () => {
-    autoUpdater.downloadUpdate()
-})
-
-// 앱 재시작
-ipcMain.on('restartApp', () => {
-    autoUpdater.quitAndInstall(true, true)
 })
 
 // 설정 메뉴에서 업데이트 확인
