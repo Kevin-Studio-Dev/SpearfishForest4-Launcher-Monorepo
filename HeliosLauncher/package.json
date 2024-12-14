@@ -1,6 +1,6 @@
 {
   "name": "spearfishforest4",
-  "version": "0.0.33",
+  "version": "0.0.34",
   "productName": "SpearfishForest4",
   "description": "Modded Minecraft Launcher",
   "author": "Sunghyun Kim",
@@ -92,13 +92,7 @@
             "x64"
           ]
         }
-      ],
-      "signingHashAlgorithms": [
-        "sha256"
-      ],
-      "signDlls": false,
-      "certificateSubjectName": "Sunghyun Kim",
-      "verifyUpdateCodeSignature": false
+      ]
     },
     "linux": {
       "target": [
