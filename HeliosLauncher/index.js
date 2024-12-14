@@ -24,12 +24,26 @@ autoUpdater.logger.transports.file.level = 'info'
 
 // 자동 업데이트 설정
 function initAutoUpdater(event, data) {
-    autoUpdater.autoDownload = true;  // 자동 다운로드 활성화
-    autoUpdater.autoInstallOnAppQuit = true;  // 앱 종료 시 자동 설치 활성화
+    autoUpdater.autoDownload = true
+    autoUpdater.autoInstallOnAppQuit = true
 
     autoUpdater.on('error', (err) => {
         log.error('AutoUpdater 오류:', err)
-        dialog.showErrorBox('오류', '업데이트 중 오류가 발생했습니다: ' + err)
+    })
+
+    autoUpdater.on('update-available', (info) => {
+        log.info('업데이트 가능:', info)
+        dialog.showMessageBox({
+            type: 'info',
+            title: '업데이트 다운로드',
+            message: '새로운 버전을 다운로드합니다.\n다운로드 완료 후 자동으로 재시작됩니다.',
+            buttons: ['확인'],
+            defaultId: 0
+        })
+    })
+
+    autoUpdater.on('download-progress', (progressObj) => {
+        win.webContents.send('updateDownloadProgress', progressObj)
     })
 
     autoUpdater.on('update-downloaded', (info) => {
@@ -37,46 +51,14 @@ function initAutoUpdater(event, data) {
         dialog.showMessageBox({
             type: 'info',
             title: '업데이트 설치',
-            message: '새로운 버전이 다운로드되었습니다. 프로그램을 재시작하여 업데이트를 설치합니다.',
+            message: '업데이트 다운로드가 완료되었습니다.\n프로그램이 3초 후 자동으로 재시작됩니다.',
             buttons: ['확인'],
             defaultId: 0
         }).then(() => {
-            autoUpdater.quitAndInstall(true, true)
+            setTimeout(() => {
+                autoUpdater.quitAndInstall(true, true)
+            }, 3000)
         })
-    })
-
-    autoUpdater.on('update-available', (info) => {
-        log.info('업데이트 가능:', info)
-        win.webContents.send('updateAvailable', info)
-    })
-
-    autoUpdater.on('download-progress', (progressObj) => {
-        win.webContents.send('updateDownloadProgress', progressObj)
-    })
-
-    autoUpdater.on('update-not-available', (info) => {
-        event.sender.send('autoUpdateNotification', 'update-not-available', info)
-    })
-
-    // 앱 종료 전 이벤트 처리
-    app.on('before-quit', (event) => {
-        if (updateReady) {
-            event.preventDefault();
-            dialog.showMessageBox({
-                type: 'info',
-                title: '업데이트 설치',
-                message: '다운로드된 업데이트가 있습니다. 지금 설치하시겠습니까?',
-                buttons: ['지금 설치', '나중에'],
-                defaultId: 0,
-                cancelId: 1
-            }).then(result => {
-                if (result.response === 0) {
-                    autoUpdater.quitAndInstall(false, true)
-                } else {
-                    app.exit(0)
-                }
-            })
-        }
     })
 }
 
@@ -408,10 +390,12 @@ app.on('activate', () => {
 ipcMain.on('installUpdate', () => {
     dialog.showMessageBox({
         type: 'info',
-        title: '업데이트 다운로드',
-        message: '업데이트를 다운로드합니다. 다운로드가 완료되면 자동으로 설치됩니다.',
+        title: '업데이트 시작',
+        message: '업데이트를 시작합니다.\n다운로드 완료 후 자동으로 재시작됩니다.',
         buttons: ['확인'],
         defaultId: 0
+    }).then(() => {
+        autoUpdater.checkForUpdates()
     })
 })
 
