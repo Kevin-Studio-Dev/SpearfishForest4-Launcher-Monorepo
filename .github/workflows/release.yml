@@ -5,41 +5,12 @@ on:
       - 'HeliosLauncher/package.json'
     branches:
       - master
+    tags-ignore:
+      - '*'
 
 jobs:
-  check-version:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get-version.outputs.version }}
-      changed: ${{ steps.check-version.outputs.changed }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-      
-      - name: Get new version
-        id: get-version
-        run: |
-          VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-      - name: Check if version changed
-        id: check-version
-        run: |
-          git checkout HEAD^1
-          OLD_VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
-          NEW_VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
-          if [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
-
   release:
-    needs: check-version
-    if: needs.check-version.outputs.changed == 'true'
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
@@ -48,6 +19,12 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
+      - name: Get version
+        id: get-version
+        run: |
+          VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Create Release
         if: matrix.os == 'macos-latest'
         id: create_release
@@ -55,8 +32,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ needs.check-version.outputs.version }}
-          release_name: Release v${{ needs.check-version.outputs.version }}
+          tag_name: v${{ steps.get-version.outputs.version }}
+          release_name: Release v${{ steps.get-version.outputs.version }}
           draft: false
           prerelease: false
 
