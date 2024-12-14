@@ -58,6 +58,8 @@ jobs:
           package_root: HeliosLauncher
           mac_certs: ${{ secrets.mac_certs }}
           mac_certs_password: ${{ secrets.mac_certs_password }}
+          windows_certs: ${{ secrets.windows_certs }}
+          windows_certs_password: ${{ secrets.windows_certs_password }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
@@ -67,7 +69,7 @@ jobs:
         shell: bash
         run: |
           cd HeliosLauncher/dist
-          dir
+          ls -la
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
