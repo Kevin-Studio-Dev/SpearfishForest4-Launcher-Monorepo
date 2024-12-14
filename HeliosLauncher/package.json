@@ -50,11 +50,12 @@
     "directories": {
       "output": "dist"
     },
-    "publish": {
+    "publish": [{
       "provider": "github",
       "owner": "Kevin-Studio-Dev",
-      "repo": "SpearfishForest4-Launcher-Monorepo"
-    },
+      "repo": "SpearfishForest4-Launcher-Monorepo",
+      "releaseType": "release"
+    }],
     "mac": {
       "category": "public.app-category.games",
       "target": [

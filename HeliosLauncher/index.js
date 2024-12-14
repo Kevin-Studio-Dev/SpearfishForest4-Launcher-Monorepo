@@ -18,26 +18,22 @@ LangLoader.setupLanguage()
 
 // Setup auto updater.
 function initAutoUpdater(event, data) {
-
-    if(data){
-        autoUpdater.allowPrerelease = true
-    } else {
-        // Defaults to true if application version contains prerelease components (e.g. 0.12.1-alpha.1)
-        // autoUpdater.allowPrerelease = true
-    }
+    autoUpdater.allowPrerelease = true
+    autoUpdater.autoDownload = true
+    autoUpdater.autoInstallOnAppQuit = true
     
     if(isDev){
         autoUpdater.autoInstallOnAppQuit = false
         autoUpdater.updateConfigPath = path.join(__dirname, 'dev-app-update.yml')
     }
-    if(process.platform === 'darwin'){
-        autoUpdater.autoDownload = false
-    }
+
     autoUpdater.on('update-available', (info) => {
         event.sender.send('autoUpdateNotification', 'update-available', info)
+        autoUpdater.downloadUpdate()
     })
     autoUpdater.on('update-downloaded', (info) => {
         event.sender.send('autoUpdateNotification', 'update-downloaded', info)
+        autoUpdater.quitAndInstall(true, true)
     })
     autoUpdater.on('update-not-available', (info) => {
         event.sender.send('autoUpdateNotification', 'update-not-available', info)
@@ -47,7 +43,15 @@ function initAutoUpdater(event, data) {
     })
     autoUpdater.on('error', (err) => {
         event.sender.send('autoUpdateNotification', 'realerror', err)
-    }) 
+    })
+
+    // 1시간마다 업데이트 확인
+    setInterval(() => {
+        autoUpdater.checkForUpdates()
+    }, 3600000)
+    
+    // 초기 업데이트 확인
+    autoUpdater.checkForUpdates()
 }
 
 // Open channel to listen for update actions.
