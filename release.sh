@@ -53,20 +53,26 @@ if [ "$release_type" = "1" ]; then
         new_version="$version_number"
     fi
 else
-    # 현재 버전에서 기본 버전 추출 (beta. 및 타임스탬프 제거)
-    base_current_version=$(echo "$current_version" | sed -E 's/-beta\.[0-9]+//g')
-    
-    # 현재 버전을 . 기준으로 분리하고 패치 버전 증가
-    IFS='.' read -r major minor patch <<< "$base_current_version"
-    new_patch=$((patch + 1))
-    
-    read -p "새 버전을 입력하세요 (엔터: $major.$minor.$new_patch) (현재: $current_version): " version_number
-    if [ -z "$version_number" ]; then
-        base_version="$major.$minor.$new_patch"
+    # 현재가 사전 릴리즈인지 확인
+    if [[ "$current_version" == *-beta.* ]]; then
+        # 사전 릴리즈에서 사전 릴리즈로 가는 경우
+        # 기존 버전에서 타임스탬프만 변경
+        base_version=$(echo "$current_version" | sed -E 's/-beta\.[0-9]+//g')
+        new_version="$base_version-$branch_prefix$timestamp"
     else
-        base_version="$version_number"
+        # 정식 릴리즈에서 사전 릴리즈로 가는 경우
+        # 패치 버전을 증가시키고 타임스탬프 추가
+        IFS='.' read -r major minor patch <<< "$current_version"
+        new_patch=$((patch + 1))
+        
+        read -p "새 버전을 입력하세요 (엔터: $major.$minor.$new_patch) (현재: $current_version): " version_number
+        if [ -z "$version_number" ]; then
+            base_version="$major.$minor.$new_patch"
+        else
+            base_version="$version_number"
+        fi
+        new_version="$base_version-$branch_prefix$timestamp"
     fi
-    new_version="$base_version-$branch_prefix$timestamp"
 fi
 
 # package.json 버전 업데이트
