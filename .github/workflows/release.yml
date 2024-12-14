@@ -23,30 +23,26 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Get version and branch info
-        id: get-version
-        shell: bash
-        run: |
-          VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
-          echo "GitHub Ref: $GITHUB_REF"
-          
-          # master 브랜치인지 확인
-          if [[ "$GITHUB_REF" == "refs/heads/master" ]]; then
-            echo "This is master branch"
-            IS_PRERELEASE=false
-          else
-            echo "This is prerelease branch" 
-            IS_PRERELEASE=true
-          fi
-          
-          echo "Is Prerelease: $IS_PRERELEASE"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
-
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      - name: Get version and branch info
+        id: get-version
+        run: |
+          cd HeliosLauncher
+          node -e "console.log('version=' + require('./package.json').version)"
+          echo "GitHub Ref: $GITHUB_REF"
+
+          if [ \"$GITHUB_REF\" == \"refs/heads/master\" ]; then
+            echo "This is master branch"
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+          else
+            echo "This is prerelease branch" 
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
 
       - name: Install Dependencies
         run: |
@@ -55,20 +51,14 @@ jobs:
 
       - name: Update release type for prerelease
         if: ${{ contains(github.ref, 'prerelease/') }}
-        shell: bash
         run: |
           cd HeliosLauncher
-          # 임시 파일 생성 전 기존 파일이 있다면 제거
-          rm -f package.json.tmp
-          jq '.build.publish[0].releaseType = "prerelease"' package.json > package.json.tmp
-          # 임시 파일이 정상적으로 생성되었는지 확인
-          if [ -f package.json.tmp ]; then
-            rm package.json
-            mv package.json.tmp package.json
-          else
-            echo "Failed to create temporary package.json file"
-            exit 1
-          fi
+          node -e "
+            const fs = require('fs');
+            const pkg = require('./package.json');
+            pkg.build.publish[0].releaseType = 'prerelease';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+          "
 
       - name: Build/Release Electron app
         uses: samuelmeuli/action-electron-builder@v1
@@ -86,10 +76,10 @@ jobs:
           DEBUG: electron-builder
 
       - name: List dist directory
-        shell: bash
         run: |
           cd HeliosLauncher/dist
           ls -la
+        shell: bash
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
@@ -106,24 +96,26 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Get version and branch info
         id: get-version
-        shell: bash
         run: |
-          VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
-          
-          # master 브랜치인지 확인 
-          if [[ "$GITHUB_REF" == "refs/heads/master" ]]; then
+          cd HeliosLauncher
+          node -e "console.log('version=' + require('./package.json').version)"
+          echo "GitHub Ref: $GITHUB_REF"
+
+          if [ \"$GITHUB_REF\" == \"refs/heads/master\" ]; then
             echo "This is master branch"
-            IS_PRERELEASE=false
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
           else
-            echo "This is prerelease branch"
-            IS_PRERELEASE=true
+            echo "This is prerelease branch" 
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
           fi
-          
-          echo "Is Prerelease: $IS_PRERELEASE"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Download all artifacts
         uses: actions/download-artifact@v3
@@ -138,7 +130,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # latest 태그 업데이트를 릴리즈 생성 전에 수행
       - name: Update latest tag
         if: ${{ !steps.get-version.outputs.is_prerelease }}
         run: |
@@ -162,7 +153,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # latest 릴리즈 자산 관리
       - name: Delete latest release assets
         if: ${{ !steps.get-version.outputs.is_prerelease }}
         uses: dev-drprasad/delete-older-releases@v0.2.1
