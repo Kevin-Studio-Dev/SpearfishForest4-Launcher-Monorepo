@@ -37,8 +37,10 @@ webFrame.setZoomLevel(0)
 webFrame.setVisualZoomLevelLimits(1, 1)
 
 // Initialize auto updates in production environments.
-let updateCheckListener
 if(!isDev){
+    // 앱 시작 시 바로 업데이트 확인
+    ipcRenderer.send('autoUpdateAction', 'checkForUpdate')
+    
     ipcRenderer.on('autoUpdateNotification', (event, arg, info) => {
         switch(arg){
             case 'checking-for-update':

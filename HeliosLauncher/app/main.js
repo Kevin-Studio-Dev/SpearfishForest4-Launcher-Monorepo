@@ -3,12 +3,16 @@ const path = require('path')
 const url = require('url')
 const isDev = require('./assets/js/isdev')
 const { LoggerUtil } = require('helios-core')
+const fetch = require('node-fetch')
+const semver = require('semver')
 
 const logger = LoggerUtil.getLogger('Main')
 
 // 업데이트 서버 URL 설정
 const updateServer = 'https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo'
-const feed = `${updateServer}/releases/latest/download/SpearfishForest4-mac.dmg`
+
+// 현재 버전 가져오기
+const currentVersion = require('../package.json').version
 
 // 자동 업데이트 설정
 function setupAutoUpdater(win) {
@@ -16,42 +20,36 @@ function setupAutoUpdater(win) {
         return
     }
 
-    // 자동 업데이트 URL 설정
-    autoUpdater.setFeedURL({
-        url: feed,
-        serverType: 'json'
-    })
-
-    // 업데이트 이벤트 리스너
-    autoUpdater.on('checking-for-update', () => {
-        win.webContents.send('autoUpdateNotification', 'checking-for-update')
-    })
-
-    autoUpdater.on('update-available', (info) => {
-        win.webContents.send('autoUpdateNotification', 'update-available', info)
-    })
-
-    autoUpdater.on('update-not-available', () => {
-        win.webContents.send('autoUpdateNotification', 'update-not-available')
-    })
-
-    autoUpdater.on('error', (err) => {
-        win.webContents.send('autoUpdateNotification', 'realerror', {
-            error: err,
-            code: err.code
-        })
-    })
-
     // IPC 이벤트 리스너
     ipcMain.on('autoUpdateAction', (event, arg, data) => {
         switch(arg) {
             case 'checkForUpdate':
-                autoUpdater.checkForUpdates()
+                win.webContents.send('autoUpdateNotification', 'checking-for-update')
+                
+                // GitHub API를 통해 최신 릴리즈 버전 확인
+                fetch('https://api.github.com/repos/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo/releases/latest')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('GitHub API 요청 실패')
+                        }
+                        return response.json()
+                    })
+                    .then(data => {
+                        const latestVersion = data.tag_name.replace('v', '')
+                        const currentVersion = require('../package.json').version
+                        
+                        if (semver.gt(latestVersion, currentVersion)) {
+                            win.webContents.send('autoUpdateNotification', 'update-available', {
+                                version: latestVersion,
+                                releaseNotes: data.body || '새로운 업데이트가 있습니다.'
+                            })
+                        } else {
+                            win.webContents.send('autoUpdateNotification', 'update-not-available')
+                        }
+                    })
                     .catch(err => {
-                        win.webContents.send('autoUpdateNotification', 'realerror', {
-                            error: err,
-                            code: err.code
-                        })
+                        console.error('업데이트 확인 중 오류:', err)
+                        win.webContents.send('autoUpdateNotification', 'update-not-available')
                     })
                 break
             case 'allowPrereleaseChange':
@@ -67,10 +65,35 @@ function setupAutoUpdater(win) {
         }
     })
 
+    // 업데이트 이벤트 리스너
+    autoUpdater.on('checking-for-update', () => {
+        win.webContents.send('autoUpdateNotification', 'checking-for-update')
+    })
+
+    autoUpdater.on('update-not-available', () => {
+        win.webContents.send('autoUpdateNotification', 'update-not-available')
+    })
+
+    autoUpdater.on('error', (err) => {
+        win.webContents.send('autoUpdateNotification', 'realerror', {
+            error: err,
+            code: err.code
+        })
+    })
+
     // 초기 업데이트 확인
     win.webContents.once('did-finish-load', () => {
         win.webContents.send('autoUpdateNotification', 'ready')
     })
+
+    // 즉시 업데이트 확인 시작
+    autoUpdater.checkForUpdates()
+        .catch(err => {
+            win.webContents.send('autoUpdateNotification', 'realerror', {
+                error: err,
+                code: err.code
+            })
+        })
 }
 
 function createWindow() {

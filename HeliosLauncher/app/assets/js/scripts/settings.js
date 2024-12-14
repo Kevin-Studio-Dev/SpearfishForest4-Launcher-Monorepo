@@ -1358,7 +1358,7 @@ function populateJvmOptsLink(server) {
         settingsJvmOptsLink.href = `https://docs.oracle.com/en/java/javase/${major}/docs/specs/man/java.html#extra-options-for-java`
     }
     else if(major >= 11) {
-        settingsJvmOptsLink.href = 'https://docs.oracle.com/en/java/javase/11/tools/java.html#GUID-3B1CE181-CD30-4178-9602-230B800D4FAE'
+        settingsJvmOptsLink.href = 'https://docs.oracle.com/en/java/javase/11/tools/java.html'
     }
     else if(major >= 9) {
         settingsJvmOptsLink.href = `https://docs.oracle.com/javase/${major}/tools/java.htm`
@@ -1540,8 +1540,8 @@ function populateSettingsUpdateInformation(data){
         populateVersionInformation(remote.app.getVersion(), settingsUpdateVersionValue, settingsUpdateVersionTitle, settingsUpdateVersionCheck)
         settingsUpdateButtonStatus(Lang.queryJS('settings.updates.checkForUpdatesButton'), false, () => {
             if(!isDev){
-                ipcRenderer.send('autoUpdateAction', 'checkForUpdate')
                 settingsUpdateButtonStatus(Lang.queryJS('settings.updates.checkingForUpdatesButton'), true)
+                ipcRenderer.send('autoUpdateAction', 'checkForUpdate')
             }
         })
     }
@@ -1584,13 +1584,55 @@ async function prepareSettings(first = false) {
 
 // allowPrerelease 토글 이벤트 핸들러
 document.getElementById('settingsAllowPrerelease').addEventListener('change', (e) => {
-    const val = e.target.checked
-    ConfigManager.setAllowPrerelease(val)
-    
-    // DistroAPI 다시 로드
-    DistroManager.reloadDistroAPI().then(() => {
-        // 필요한 경우 UI 업데이트
-    }).catch((err) => {
-        console.error('Failed to reload distribution:', err)
-    })
+    const allowPrerelease = e.target.checked
+    ipcRenderer.send('autoUpdateAction', 'allowPrereleaseChange', allowPrerelease)
 })
+
+populateSettingsUpdateInformation(null)
+
+const settingsUpdateButton = document.getElementById('settingsUpdateButton')
+if (settingsUpdateButton) {
+    const originalButtonText = '업데이트 확인'
+    settingsUpdateButton.innerHTML = originalButtonText
+    
+    settingsUpdateButton.onclick = () => {
+        settingsUpdateButton.innerHTML = '업데이트 확인 중...'
+        settingsUpdateButton.disabled = true
+        ipcRenderer.send('autoUpdateAction', 'checkForUpdate')
+    }
+
+    // 업데이트 알림 이벤트 리스너
+    ipcRenderer.on('autoUpdateNotification', (event, state, info) => {
+        const resetButton = () => {
+            settingsUpdateButton.innerHTML = originalButtonText
+            settingsUpdateButton.disabled = false
+        }
+
+        switch(state) {
+            case 'checking-for-update':
+                settingsUpdateButton.innerHTML = '업데이트 확인 중...'
+                settingsUpdateButton.disabled = true
+                break
+            case 'update-available':
+                resetButton()
+                if (process.platform === 'darwin') {
+                    const response = confirm(`새로운 버전 ${info.version}이(가) 있습니다.\n\n${info.releaseNotes || '새로운 업데이트가 있습니다.'}\n\n지금 다운로드하시겠습니까?`)
+                    if (response) {
+                        shell.openExternal(`https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo/releases/download/v${info.version}/HeliosLauncher-${info.version}.dmg`)
+                    }
+                }
+                break
+            case 'update-not-available':
+                resetButton()
+                alert('현재 최신 버전을 사용 중입니다.')
+                break
+            case 'error':
+                resetButton()
+                alert('업데이트 확인 중 오류가 발생했습니다.')
+                break
+            default:
+                resetButton()
+                break
+        }
+    })
+}
