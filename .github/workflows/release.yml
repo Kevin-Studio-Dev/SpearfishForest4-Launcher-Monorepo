@@ -4,7 +4,7 @@ on:
     paths:
       - 'HeliosLauncher/package.json'
     branches:
-      - main
+      - master
 
 jobs:
   check-version:
