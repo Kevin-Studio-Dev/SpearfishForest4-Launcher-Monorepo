@@ -61,12 +61,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
+          DEBUG: electron-builder
+
+      - name: List dist directory
+        run: |
+          cd HeliosLauncher/dist
+          ls -la
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: dist-${{ matrix.os }}
-          path: HeliosLauncher/dist/*
+          path: |
+            HeliosLauncher/dist/*
+            !HeliosLauncher/dist/builder-debug.yml
 
   release:
     needs: build
@@ -109,13 +117,13 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: ${{ steps.get-version.outputs.is_prerelease && 'Pre-release' || 'Release' }} v${{ steps.get-version.outputs.version }}
+          name: ${{ steps.get-version.outputs.is_prerelease && format('Pre-release v{0}', steps.get-version.outputs.version) || format('Release v{0}', steps.get-version.outputs.version) }}
           tag_name: ${{ steps.get-version.outputs.is_prerelease && 'prerelease' || format('v{0}', steps.get-version.outputs.version) }}
           draft: false
           prerelease: ${{ steps.get-version.outputs.is_prerelease }}
           files: |
-            artifacts/dist-macos-latest/*
-            artifacts/dist-windows-latest/*
+            artifacts/dist-macos-latest/!(builder-debug.yml)
+            artifacts/dist-windows-latest/!(builder-debug.yml)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -140,7 +148,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            artifacts/dist-macos-latest/*
-            artifacts/dist-windows-latest/*
+            artifacts/dist-macos-latest/!(builder-debug.yml)
+            artifacts/dist-windows-latest/!(builder-debug.yml)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
