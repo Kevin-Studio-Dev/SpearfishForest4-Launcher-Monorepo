@@ -159,8 +159,10 @@ jobs:
           draft: false
           prerelease: ${{ steps.get-version.outputs.is_prerelease == 'true' }}
           files: |
-            artifacts/dist-macos-latest/!(builder-debug.yml)
-            artifacts/dist-windows-latest/!(builder-debug.yml)
+            artifacts/dist-macos-latest/*
+            !artifacts/dist-macos-latest/builder-debug.yml
+            artifacts/dist-windows-latest/*
+            !artifacts/dist-windows-latest/builder-debug.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -184,7 +186,9 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            artifacts/dist-macos-latest/!(builder-debug.yml)
-            artifacts/dist-windows-latest/!(builder-debug.yml)
+            artifacts/dist-macos-latest/*
+            !artifacts/dist-macos-latest/builder-debug.yml
+            artifacts/dist-windows-latest/*
+            !artifacts/dist-windows-latest/builder-debug.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
