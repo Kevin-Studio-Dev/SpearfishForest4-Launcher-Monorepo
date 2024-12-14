@@ -40,11 +40,18 @@ function initAutoUpdater(event, data) {
             win.webContents.send('updateAvailable', info.version)
         }
     })
-    autoUpdater.on('update-downloaded', (info) => {
+
+    // 업데이트 진행 상태 전송
+    autoUpdater.on('download-progress', (progressObj) => {
+        win.webContents.send('updateDownloadProgress', progressObj.percent)
+    })
+
+    autoUpdater.on('update-downloaded', () => {
         updateDownloaded = true
-        event.sender.send('autoUpdateNotification', 'update-downloaded', info)
+        event.sender.send('autoUpdateNotification', 'update-downloaded')
         win.webContents.send('updateDownloaded')
     })
+
     autoUpdater.on('update-not-available', (info) => {
         event.sender.send('autoUpdateNotification', 'update-not-available', info)
     })
@@ -91,7 +98,7 @@ ipcMain.on('autoUpdateAction', (event, arg, data) => {
             }
             break
         case 'installUpdateNow':
-            autoUpdater.quitAndInstall()
+            autoUpdater.downloadUpdate()
             break
         default:
             console.log('Unknown argument', arg)
@@ -405,6 +412,11 @@ app.on('ready', () => {
 
 // 업데이트 수락 시 처리
 ipcMain.on('installUpdate', () => {
+    autoUpdater.downloadUpdate()
+})
+
+// 앱 재시작
+ipcMain.on('restartApp', () => {
     autoUpdater.quitAndInstall(true, true)
 })
 

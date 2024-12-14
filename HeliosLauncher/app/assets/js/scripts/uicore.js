@@ -147,8 +147,16 @@ function showUpdatePopup(newVersion) {
     const updateButton = document.createElement('button')
     updateButton.className = 'update_popup_button primary'
     updateButton.textContent = '지금 업데이트'
+    
+    const statusMessage = document.createElement('div')
+    statusMessage.className = 'update_status_message'
+    statusMessage.textContent = '업데이트를 다운로드하는 중...'
+
     updateButton.onclick = () => {
-        modalContainer.remove()
+        updateButton.classList.add('loading')
+        updateButton.disabled = true
+        laterButton.style.display = 'none'
+        statusMessage.classList.add('visible')
         ipcRenderer.send('installUpdate')
     }
 
@@ -162,18 +170,34 @@ function showUpdatePopup(newVersion) {
     modalContainer.appendChild(title)
     modalContainer.appendChild(message)
     modalContainer.appendChild(buttonContainer)
+    modalContainer.appendChild(statusMessage)
     document.body.appendChild(modalContainer)
 }
+
+// 다운로드 진행 상태 업데이트
+ipcRenderer.on('updateDownloadProgress', (event, progress) => {
+    const statusMessage = document.querySelector('.update_status_message')
+    if (statusMessage) {
+        statusMessage.textContent = `업데이트 다운로드 중... ${Math.round(progress)}%`
+    }
+})
+
+// 다운로드 완료
+ipcRenderer.on('updateDownloaded', () => {
+    const statusMessage = document.querySelector('.update_status_message')
+    if (statusMessage) {
+        statusMessage.textContent = '업데이트 설치 준비 완료'
+    }
+    // 3초 후 자동으로 재시작
+    setTimeout(() => {
+        ipcRenderer.send('restartApp')
+    }, 3000)
+})
 
 // IPC 이벤트 리스너 등록
 ipcRenderer.on('updateAvailable', (event, version) => {
     showUpdatePopup(version)
 })
-
-/* jQuery Example
-$(function(){
-    loggerUICore.info('UICore Initialized');
-})*/
 
 document.addEventListener('readystatechange', function () {
     if (document.readyState === 'interactive'){
