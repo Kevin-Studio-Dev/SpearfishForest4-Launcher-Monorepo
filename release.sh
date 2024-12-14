@@ -9,8 +9,8 @@ read -p "선택 (1 또는 2): " release_type
 # 현재 브랜치 확인
 current_branch=$(git rev-parse --abbrev-ref HEAD)
 
-# 타임스탬프 생성
-timestamp=$(date +%y/%m/%d-%H:%M:%S)
+# 타임스탬프 생성 (하이픈 제거)
+timestamp=$(date +%y%m%d%H%M%S)
 
 # 브랜치 전환 로직
 if [ "$release_type" = "1" ]; then
@@ -54,8 +54,17 @@ if [ "$release_type" = "1" ]; then
         new_version="$version_number"
     fi
 else
-    read -p "새 버전을 입력하세요 (예: 1.0.0): " version_number
-    new_version="$version_number-$branch_prefix$timestamp"
+    # 현재 버전을 . 기준으로 분리하고 패치 버전 증가
+    IFS='.' read -r major minor patch <<< "$current_version"
+    new_patch=$((patch + 1))
+    
+    read -p "새 버전을 입력하세요 (엔터: $major.$minor.$new_patch) (현재: $current_version): " version_number
+    if [ -z "$version_number" ]; then
+        base_version="$major.$minor.$new_patch"
+    else
+        base_version="$version_number"
+    fi
+    new_version="$base_version-$branch_prefix$timestamp"
 fi
 
 # package.json 버전 업데이트
