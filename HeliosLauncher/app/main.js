@@ -8,13 +8,19 @@ const logger = LoggerUtil.getLogger('Main')
 
 // 업데이트 서버 URL 설정
 const updateServer = 'https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo'
-const feed = `${updateServer}/releases/${process.platform}-${process.arch}`
+const feed = `${updateServer}/releases/latest/download/SpearfishForest4-mac.dmg`
 
 // 자동 업데이트 설정
 function setupAutoUpdater(win) {
     if(isDev) {
         return
     }
+
+    // 자동 업데이트 URL 설정
+    autoUpdater.setFeedURL({
+        url: feed,
+        serverType: 'json'
+    })
 
     // 업데이트 이벤트 리스너
     autoUpdater.on('checking-for-update', () => {
@@ -99,5 +105,19 @@ function createWindow() {
 
     // ... 나머지 코드는 그대로 유지
 }
+
+app.on('ready', () => {
+    const win = createWindow()
+    createMenu()
+    
+    // 앱 시작 시 자동 업데이트 설정
+    if (!isDev) {
+        setupAutoUpdater(win)
+        // 30분마다 업데이트 확인
+        setInterval(() => {
+            autoUpdater.checkForUpdates()
+        }, 1800000)
+    }
+})
 
 // ... 나머지 코드는 그대로 유지
