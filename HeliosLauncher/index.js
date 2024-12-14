@@ -23,7 +23,7 @@ autoUpdater.logger = log
 autoUpdater.logger.transports.file.level = 'info'
 
 // 자동 업데이트 설정
-function initAutoUpdater(event, data) {
+function initAutoUpdater() {
     autoUpdater.autoDownload = true
     autoUpdater.autoInstallOnAppQuit = true
 
@@ -60,6 +60,9 @@ function initAutoUpdater(event, data) {
             }, 3000)
         })
     })
+
+    // 즉시 업데이트 확인 시작
+    autoUpdater.checkForUpdates()
 }
 
 // Open channel to listen for update actions.
@@ -67,7 +70,7 @@ ipcMain.on('autoUpdateAction', (event, arg, data) => {
     switch(arg){
         case 'initAutoUpdater':
             console.log('Initializing auto updater.')
-            initAutoUpdater(event, data)
+            initAutoUpdater()
             event.sender.send('autoUpdateNotification', 'ready')
             break
         case 'checkForUpdate':
@@ -285,6 +288,14 @@ function createWindow() {
     win.on('closed', () => {
         win = null
     })
+
+    win.once('ready-to-show', () => {
+        win.show()
+        // 개발 모드가 아닐 때만 자동 업데이트 실행
+        if (!isDev) {
+            initAutoUpdater()
+        }
+    })
 }
 
 function createMenu() {
@@ -390,8 +401,8 @@ app.on('activate', () => {
 ipcMain.on('installUpdate', () => {
     dialog.showMessageBox({
         type: 'info',
-        title: '업데이트 시작',
-        message: '업데이트를 시작합니다.\n다운로드 완료 후 자동으로 재시작됩니다.',
+        title: '업데이트 확인',
+        message: '업데이트를 확인하고 있습니다...',
         buttons: ['확인'],
         defaultId: 0
     }).then(() => {
