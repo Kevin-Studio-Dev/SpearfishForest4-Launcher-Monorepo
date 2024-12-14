@@ -23,13 +23,17 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Get version
+      - name: Get version and branch info
         id: get-version
         shell: bash
         run: |
           VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
-          BRANCH=${GITHUB_REF#refs/heads/}
-          IS_PRERELEASE=${{ contains(github.ref, 'prerelease/') }}
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          echo "Current branch: $BRANCH_NAME"
+          IS_PRERELEASE=false
+          if [[ "$BRANCH_NAME" == prerelease/* ]]; then
+            IS_PRERELEASE=true
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
 
@@ -86,12 +90,17 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
 
-      - name: Get version
+      - name: Get version and branch info
         id: get-version
         shell: bash
         run: |
           VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
-          IS_PRERELEASE=${{ contains(github.ref, 'prerelease/') }}
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          echo "Current branch: $BRANCH_NAME"
+          IS_PRERELEASE=false
+          if [[ "$BRANCH_NAME" == prerelease/* ]]; then
+            IS_PRERELEASE=true
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
 

@@ -24,10 +24,7 @@ if [ "$release_type" = "1" ]; then
         git checkout master
     fi
     branch_prefix=""
-    # releaseType을 release로 설정
-    cd HeliosLauncher
-    jq '.build.publish[0].releaseType = "release"' package.json > package.json.tmp && mv package.json.tmp package.json
-    cd ..
+    # releaseType 설정 제거 (GitHub Actions에서 자동으로 처리)
 else
     if [[ "$current_branch" != prerelease/* ]]; then
         echo "새로운 사전 릴리즈 브랜치를 생성합니다..."
@@ -36,10 +33,7 @@ else
         git checkout -b "prerelease/$branch_timestamp"
     fi
     branch_prefix="beta."
-    # releaseType을 prerelease로 설정
-    cd HeliosLauncher
-    jq '.build.publish[0].releaseType = "prerelease"' package.json > package.json.tmp && mv package.json.tmp package.json
-    cd ..
+    # releaseType 설정 제거 (GitHub Actions에서 자동으로 처리)
 fi
 
 # 현재 버전 가져오기
