@@ -12,9 +12,14 @@ const semver                            = require('semver')
 const { pathToFileURL }                 = require('url')
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants')
 const LangLoader                        = require('./app/assets/js/langloader')
+const log                               = require('electron-log')
 
 // Setup Lang
 LangLoader.setupLanguage()
+
+// 자동 업데이트 관련 코드
+autoUpdater.logger = log
+autoUpdater.logger.transports.file.level = 'info'
 
 // Setup auto updater.
 function initAutoUpdater(event, data) {
@@ -88,6 +93,7 @@ ipcMain.on('autoUpdateAction', (event, arg, data) => {
             break
     }
 })
+
 // Redirect distribution index event from preloader to renderer.
 ipcMain.on('distributionIndexDone', (event, res) => {
     event.sender.send('distributionIndexDone', res)
@@ -375,4 +381,36 @@ app.on('activate', () => {
     if (win === null) {
         createWindow()
     }
+})
+
+// 앱 시작 시 업데이트 체크
+app.on('ready', () => {
+    // 기존 ready 이벤트 핸들러 내용...
+    
+    // 업데이트 체크 시작
+    if (!isDev) {
+        autoUpdater.checkForUpdates()
+        
+        // 1시간마다 업데이트 체크
+        setInterval(() => {
+            autoUpdater.checkForUpdates()
+        }, 3600000)
+    }
+})
+
+autoUpdater.on('update-available', (info) => {
+    win.webContents.send('updateAvailable', info.version)
+})
+
+autoUpdater.on('error', (err) => {
+    log.error('AutoUpdater 오류:', err)
+})
+
+// 업데이트 수락 시 처리
+ipcMain.on('autoUpdateAccepted', () => {
+    autoUpdater.downloadUpdate()
+})
+
+autoUpdater.on('update-downloaded', () => {
+    autoUpdater.quitAndInstall(true, true)
 })
