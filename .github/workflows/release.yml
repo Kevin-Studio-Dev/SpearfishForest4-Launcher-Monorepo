@@ -55,6 +55,7 @@ jobs:
 
       - name: Update release type for prerelease
         if: ${{ contains(github.ref, 'prerelease/') }}
+        shell: bash
         run: |
           cd HeliosLauncher
           # 임시 파일 생성 전 기존 파일이 있다면 제거
