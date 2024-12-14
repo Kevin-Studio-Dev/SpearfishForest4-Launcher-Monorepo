@@ -131,88 +131,37 @@ function showUpdateUI(info){
 // 업데이트 알림 팝업 표시
 function showUpdatePopup(newVersion) {
     const modalContainer = document.createElement('div')
-    modalContainer.id = 'updateModal'
-    modalContainer.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-    `
-
-    const modalContent = document.createElement('div')
-    modalContent.style.cssText = `
-        background: #1a1a1a;
-        padding: 20px;
-        border-radius: 8px;
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-    `
+    modalContainer.className = 'update_popup'
 
     const title = document.createElement('h3')
+    title.className = 'update_popup_title'
     title.textContent = '새로운 업데이트가 있습니다!'
-    title.style.cssText = `
-        margin: 0 0 15px 0;
-        color: #fff;
-        font-size: 18px;
-    `
 
     const message = document.createElement('p')
-    message.textContent = `새로운 버전 ${newVersion}이(가) 사용 가능합니다. 런처를 재시작하여 업데이트를 설치하시겠습니까?`
-    message.style.cssText = `
-        margin: 0 0 20px 0;
-        color: #fff;
-        font-size: 14px;
-    `
+    message.className = 'update_popup_message'
+    message.textContent = `새로운 버전 ${newVersion}이(가)\n사용 가능합니다.\n\n런처를 재시작하여 업데이트를\n설치하시겠습니까?`
 
     const buttonContainer = document.createElement('div')
-    buttonContainer.style.cssText = `
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-    `
+    buttonContainer.className = 'update_popup_buttons'
 
     const updateButton = document.createElement('button')
+    updateButton.className = 'update_popup_button primary'
     updateButton.textContent = '지금 업데이트'
-    updateButton.style.cssText = `
-        padding: 8px 16px;
-        background: #007acc;
-        border: none;
-        border-radius: 4px;
-        color: #fff;
-        cursor: pointer;
-        font-size: 14px;
-    `
     updateButton.onclick = () => {
         modalContainer.remove()
-        ipcRenderer.send('autoUpdateAccepted')
+        ipcRenderer.send('installUpdate')
     }
 
     const laterButton = document.createElement('button')
+    laterButton.className = 'update_popup_button'
     laterButton.textContent = '나중에'
-    laterButton.style.cssText = `
-        padding: 8px 16px;
-        background: #3a3a3a;
-        border: none;
-        border-radius: 4px;
-        color: #fff;
-        cursor: pointer;
-        font-size: 14px;
-    `
     laterButton.onclick = () => modalContainer.remove()
 
     buttonContainer.appendChild(updateButton)
     buttonContainer.appendChild(laterButton)
-    modalContent.appendChild(title)
-    modalContent.appendChild(message)
-    modalContent.appendChild(buttonContainer)
-    modalContainer.appendChild(modalContent)
+    modalContainer.appendChild(title)
+    modalContainer.appendChild(message)
+    modalContainer.appendChild(buttonContainer)
     document.body.appendChild(modalContainer)
 }
 

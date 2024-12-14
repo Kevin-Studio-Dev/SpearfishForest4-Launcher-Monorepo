@@ -18,6 +18,7 @@ const log                               = require('electron-log')
 LangLoader.setupLanguage()
 
 // 자동 업데이트 관련 코드
+let updateDownloaded = false;
 autoUpdater.logger = log
 autoUpdater.logger.transports.file.level = 'info'
 
@@ -33,12 +34,16 @@ function initAutoUpdater(event, data) {
     }
 
     autoUpdater.on('update-available', (info) => {
-        event.sender.send('autoUpdateNotification', 'update-available', info)
-        autoUpdater.downloadUpdate()
+        // 런처 시작 시에만 알림
+        if (!updateDownloaded) {
+            event.sender.send('autoUpdateNotification', 'update-available', info)
+            win.webContents.send('updateAvailable', info.version)
+        }
     })
     autoUpdater.on('update-downloaded', (info) => {
+        updateDownloaded = true
         event.sender.send('autoUpdateNotification', 'update-downloaded', info)
-        autoUpdater.quitAndInstall(true, true)
+        win.webContents.send('updateDownloaded')
     })
     autoUpdater.on('update-not-available', (info) => {
         event.sender.send('autoUpdateNotification', 'update-not-available', info)
@@ -398,19 +403,16 @@ app.on('ready', () => {
     }
 })
 
-autoUpdater.on('update-available', (info) => {
-    win.webContents.send('updateAvailable', info.version)
+// 업데이트 수락 시 처리
+ipcMain.on('installUpdate', () => {
+    autoUpdater.quitAndInstall(true, true)
+})
+
+// 설정 메뉴에서 업데이트 확인
+ipcMain.on('checkForUpdates', () => {
+    autoUpdater.checkForUpdates()
 })
 
 autoUpdater.on('error', (err) => {
     log.error('AutoUpdater 오류:', err)
-})
-
-// 업데이트 수락 시 처리
-ipcMain.on('autoUpdateAccepted', () => {
-    autoUpdater.downloadUpdate()
-})
-
-autoUpdater.on('update-downloaded', () => {
-    autoUpdater.quitAndInstall(true, true)
 })

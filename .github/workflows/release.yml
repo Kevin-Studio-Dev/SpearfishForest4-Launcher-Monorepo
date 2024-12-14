@@ -40,49 +40,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update Latest Tag
-        if: matrix.os == 'macos-latest'
-        uses: actions/github-script@v6
-        env:
-          VERSION: ${{ steps.get-version.outputs.version }}
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const version = process.env.VERSION;
-            console.log('Current version:', version);
-            
-            // Delete the old latest tag if it exists
-            try {
-              await github.rest.git.deleteRef({
-                owner,
-                repo,
-                ref: 'tags/latest'
-              });
-            } catch (e) {
-              console.log('No latest tag exists yet');
-            }
-            
-            // Get the SHA of the current commit
-            try {
-              const { data: { object: { sha } } } = await github.rest.git.getRef({
-                owner,
-                repo,
-                ref: `tags/v${version}`
-              });
-              
-              // Create new latest tag
-              await github.rest.git.createRef({
-                owner,
-                repo,
-                ref: 'refs/tags/latest',
-                sha
-              });
-              console.log('Latest tag updated successfully');
-            } catch (e) {
-              console.error('Error updating latest tag:', e.message);
-              core.setFailed(e.message);
-            }
-
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
