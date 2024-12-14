@@ -42,11 +42,11 @@ if(!isDev){
     ipcRenderer.on('autoUpdateNotification', (event, arg, info) => {
         switch(arg){
             case 'checking-for-update':
-                loggerAutoUpdater.info('Checking for update..')
+                loggerAutoUpdater.info('업데이트 확인 중..')
                 settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkingForUpdateButton'), true)
                 break
             case 'update-available':
-                loggerAutoUpdater.info('New update available', info.version)
+                loggerAutoUpdater.info('새 업데이트 발견:', info.version)
                 
                 if(process.platform === 'darwin'){
                     info.darwindownload = `https://github.com/dscalzi/HeliosLauncher/releases/download/v${info.version}/Helios-Launcher-setup-${info.version}${process.arch === 'arm64' ? '-arm64' : '-x64'}.dmg`
@@ -54,11 +54,21 @@ if(!isDev){
                 }
                 
                 populateSettingsUpdateInformation(info)
-                settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkForUpdatesButton'))
+                settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkForUpdatesButton'), false)
                 break
             case 'update-not-available':
-                loggerAutoUpdater.info('No new update found.')
-                settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkForUpdatesButton'))
+                loggerAutoUpdater.info('새 업데이트가 없습니다.')
+                settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkForUpdatesButton'), false)
+                // 업데이트 없음 알림 표시
+                setOverlayContent(
+                    '업데이트 확인',
+                    '현재 최신 버전을 사용 중입니다.',
+                    '확인'
+                )
+                setOverlayHandler(() => {
+                    toggleOverlay(false)
+                })
+                toggleOverlay(true)
                 break
             case 'ready':
                 updateCheckListener = setInterval(() => {
@@ -69,19 +79,19 @@ if(!isDev){
             case 'realerror':
                 if(info != null && info.code != null){
                     if(info.code === 'ERR_UPDATER_INVALID_RELEASE_FEED'){
-                        loggerAutoUpdater.info('No suitable releases found.')
+                        loggerAutoUpdater.info('적합한 릴리즈를 찾을 수 없습니다.')
                     } else if(info.code === 'ERR_XML_MISSED_ELEMENT'){
-                        loggerAutoUpdater.info('No releases found.')
+                        loggerAutoUpdater.info('릴리즈를 찾을 수 없습니다.')
                     } else {
-                        loggerAutoUpdater.error('Error during update check..', info)
-                        loggerAutoUpdater.debug('Error Code:', info.code)
+                        loggerAutoUpdater.error('업데이트 확인 중 오류 발생:', info)
+                        loggerAutoUpdater.debug('오류 코드:', info.code)
                     }
                 }
-                settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkForUpdatesButton'))
+                settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkForUpdatesButton'), false)
                 break
             default:
-                loggerAutoUpdater.info('Unknown argument', arg)
-                settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkForUpdatesButton'))
+                loggerAutoUpdater.info('알 수 없는 인자:', arg)
+                settingsUpdateButtonStatus(Lang.queryJS('uicore.autoUpdate.checkForUpdatesButton'), false)
                 break
         }
     })
@@ -293,3 +303,46 @@ document.addEventListener('keydown', function (e) {
         window.toggleDevTools()
     }
 })
+
+// 업데이트 버튼 상태 업데이트 함수
+function settingsUpdateButtonStatus(text, disabled = false, handler = null){
+    const button = document.getElementById('settingsUpdateActionButton')
+    if(button) {
+        button.innerHTML = text
+        button.disabled = disabled
+        if(handler != null){
+            button.onclick = handler
+        }
+    }
+}
+
+// 업데이트 UI 표시 함수
+function populateSettingsUpdateInformation(data){
+    if(data != null){
+        settingsUpdateTitle.innerHTML = isPrerelease(data.version) ? 
+            Lang.queryJS('settings.updates.newPreReleaseTitle') : 
+            Lang.queryJS('settings.updates.newReleaseTitle')
+        settingsUpdateChangelogCont.style.display = null
+        settingsUpdateChangelogTitle.innerHTML = data.releaseName
+        settingsUpdateChangelogText.innerHTML = data.releaseNotes
+        populateVersionInformation(data.version, settingsUpdateVersionValue, settingsUpdateVersionTitle, settingsUpdateVersionCheck)
+        
+        if(process.platform === 'darwin'){
+            settingsUpdateButtonStatus(Lang.queryJS('settings.updates.downloadButton'), false, () => {
+                shell.openExternal(data.darwindownload)
+            })
+        } else {
+            settingsUpdateButtonStatus(Lang.queryJS('settings.updates.downloadingButton'), true)
+        }
+    } else {
+        settingsUpdateTitle.innerHTML = Lang.queryJS('settings.updates.latestVersionTitle')
+        settingsUpdateChangelogCont.style.display = 'none'
+        populateVersionInformation(remote.app.getVersion(), settingsUpdateVersionValue, settingsUpdateVersionTitle, settingsUpdateVersionCheck)
+        settingsUpdateButtonStatus(Lang.queryJS('settings.updates.checkForUpdatesButton'), false, () => {
+            if(!isDev){
+                ipcRenderer.send('autoUpdateAction', 'checkForUpdate')
+                settingsUpdateButtonStatus(Lang.queryJS('settings.updates.checkingForUpdatesButton'), true)
+            }
+        })
+    }
+}

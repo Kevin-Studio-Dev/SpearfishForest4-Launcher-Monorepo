@@ -278,6 +278,9 @@ downloadButton = 'GitHub에서 다운로드<span style="font-size: 10px;color: g
 latestVersionTitle = "최신 버전을 실행 중입니다"
 checkForUpdatesButton = "업데이트 확인"
 checkingForUpdatesButton = "업데이트 확인 중.."
+noUpdateTitle = "업데이트 확인"
+noUpdateMessage = "현재 최신 버전을 사용 중입니다."
+okButton = "확인"
 
 [js.settings.msftLogin]
 errorTitle = "Microsoft 로그인 실패"
