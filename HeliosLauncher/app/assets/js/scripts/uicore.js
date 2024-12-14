@@ -49,8 +49,7 @@ if(!isDev){
                 loggerAutoUpdater.info('새 업데이트 발견:', info.version)
                 
                 if(process.platform === 'darwin'){
-                    info.darwindownload = `https://github.com/dscalzi/HeliosLauncher/releases/download/v${info.version}/Helios-Launcher-setup-${info.version}${process.arch === 'arm64' ? '-arm64' : '-x64'}.dmg`
-                    showUpdateUI(info)
+                    showUpdatePopup(info.version)
                 }
                 
                 populateSettingsUpdateInformation(info)
@@ -187,7 +186,8 @@ function showUpdatePopup(newVersion) {
         updateButton.disabled = true
         laterButton.style.display = 'none'
         statusMessage.classList.add('visible')
-        ipcRenderer.send('installUpdate')
+        shell.openExternal('https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo/releases/latest/download/SpearfishForest4-mac.dmg')
+        modalContainer.remove()
     }
 
     const laterButton = document.createElement('button')
