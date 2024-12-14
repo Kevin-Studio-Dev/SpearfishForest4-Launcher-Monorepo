@@ -4,7 +4,7 @@ const os             = require('os')
 const path           = require('path')
 
 const ConfigManager  = require('./configmanager')
-const { DistroAPI }  = require('./distromanager')
+const DistroManager  = require('./distromanager')
 const LangLoader     = require('./langloader')
 const { LoggerUtil } = require('helios-core')
 // eslint-disable-next-line no-unused-vars
@@ -14,15 +14,19 @@ const logger = LoggerUtil.getLogger('Preloader')
 
 logger.info('Loading..')
 
-// Load ConfigManager
+// ConfigManager 로드
 ConfigManager.load()
+
+// DistroAPI 로드
+DistroManager.loadDistroAPI()
+const DistroAPI = DistroManager.DistroAPI
 
 // Yuck!
 // TODO Fix this
 DistroAPI['commonDir'] = ConfigManager.getCommonDirectory()
 DistroAPI['instanceDir'] = ConfigManager.getInstanceDirectory()
 
-// Load Strings
+// 문자열 로드
 LangLoader.setupLanguage()
 
 /**
@@ -32,9 +36,9 @@ LangLoader.setupLanguage()
 function onDistroLoad(data){
     if(data != null){
         
-        // Resolve the selected server if its value has yet to be set.
+        // 선택된 서버의 값이 아직 설정되지 않은 경우 이를 해결합니다.
         if(ConfigManager.getSelectedServer() == null || data.getServerById(ConfigManager.getSelectedServer()) == null){
-            logger.info('Determining default selected server..')
+            logger.info('기본 선택된 서버를 결정합니다..')
             ConfigManager.setSelectedServer(data.getMainServer().rawServer.id)
             ConfigManager.save()
         }
@@ -42,26 +46,26 @@ function onDistroLoad(data){
     ipcRenderer.send('distributionIndexDone', data != null)
 }
 
-// Ensure Distribution is downloaded and cached.
+// 배포를 다운로드하고 캐시해야 합니다.
 DistroAPI.getDistribution()
     .then(heliosDistro => {
-        logger.info('Loaded distribution index.')
+        logger.info('배포 인덱스를 로드했습니다.')
 
         onDistroLoad(heliosDistro)
     })
     .catch(err => {
-        logger.info('Failed to load an older version of the distribution index.')
-        logger.info('Application cannot run.')
+        logger.info('배포 인덱스의 이전 버전을 로드하지 못했습니다.')
+        logger.info('응용 프로그램을 실행할 수 없습니다.')
         logger.error(err)
 
         onDistroLoad(null)
     })
 
-// Clean up temp dir incase previous launches ended unexpectedly. 
+// 이전 실행이 예상치 못하게 종료된 경우 임시 디렉토리를 정리합니다. 
 fs.remove(path.join(os.tmpdir(), ConfigManager.getTempNativeFolder()), (err) => {
     if(err){
-        logger.warn('Error while cleaning natives directory', err)
+        logger.warn('네이티브 디렉토리를 정리하는 동안 오류 발생', err)
     } else {
-        logger.info('Cleaned natives directory.')
+        logger.info('네이티브 디렉토리를 정리했습니다.')
     }
 })
