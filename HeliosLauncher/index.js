@@ -27,6 +27,11 @@ function initAutoUpdater() {
     autoUpdater.autoDownload = true
     autoUpdater.autoInstallOnAppQuit = true
     
+    // macOS 특정 설정
+    if (process.platform === 'darwin') {
+        autoUpdater.autoDownload = false // macOS에서는 수동 다운로드로 설정
+    }
+    
     // 현재 버전이 사전 릴리즈인지 확인
     const preRelComp = semver.prerelease(app.getVersion())
     if(preRelComp != null && preRelComp.length > 0){
@@ -39,24 +44,35 @@ function initAutoUpdater() {
     
     autoUpdater.on('error', (err) => {
         log.error('AutoUpdater 오류:', err)
-        win.webContents.send('autoUpdateNotification', 'error', err)
+        if (win) {
+            win.webContents.send('autoUpdateNotification', 'error', err)
+        }
     })
 
     autoUpdater.on('update-not-available', () => {
         log.info('업데이트 없음')
-        win.webContents.send('autoUpdateNotification', 'noUpdate')
+        if (win) {
+            win.webContents.send('autoUpdateNotification', 'noUpdate')
+        }
     })
 
     autoUpdater.on('update-available', (info) => {
         log.info('업데이트 가능:', info)
-        const isPrerelease = semver.prerelease(info.version) != null
-        dialog.showMessageBox({
-            type: 'info',
-            title: '업데이트 다운로드',
-            message: `새로운 ${isPrerelease ? '사전 릴리즈' : ''} 버전(${info.version})을 다운로드합니다.\n다운로드 완료 후 자동으로 재시작됩니다.`,
-            buttons: ['확인'],
-            defaultId: 0
-        })
+        if (process.platform === 'darwin') {
+            dialog.showMessageBox({
+                type: 'info',
+                title: '업데이트 가능',
+                message: `새로운 버전 ${info.version}이(가) 있습니다. 지금 다운로드하시겠습니까?`,
+                buttons: ['다운로드', '나중에'],
+                defaultId: 0
+            }).then(({ response }) => {
+                if (response === 0) {
+                    autoUpdater.downloadUpdate()
+                }
+            })
+        } else {
+            win.webContents.send('autoUpdateNotification', 'update-available', info)
+        }
     })
 
     autoUpdater.on('download-progress', (progressObj) => {
@@ -422,8 +438,6 @@ ipcMain.on('installUpdate', () => {
         message: '업데이트를 확인하고 있습니다...',
         buttons: ['확인'],
         defaultId: 0
-    }).then(() => {
-        autoUpdater.checkForUpdates()
     })
 })
 
@@ -432,32 +446,53 @@ ipcMain.on('restartApp', () => {
     autoUpdater.quitAndInstall(true, true)
 })
 
-// 앱 시작 시 업데이트 체크만 수행
-app.on('ready', () => {
-    // 기존 ready 이벤트 핸들러 내용...
+let updateCheckInProgress = false;
+
+async function checkForUpdatesWithDebounce() {
+    if (updateCheckInProgress) {
+        return;
+    }
     
-    // 업데이트 체크 시작 (개발 모드가 아닐 때만)
+    updateCheckInProgress = true;
+    try {
+        await autoUpdater.checkForUpdates();
+    } catch (err) {
+        log.error('AutoUpdater 오류:', err);
+        if (win) {
+            win.webContents.send('autoUpdateNotification', 'error', err);
+        }
+    } finally {
+        updateCheckInProgress = false;
+    }
+}
+
+app.on('ready', () => {
+    // 개발 모드가 아닐 때만 업데이트 체크 실행
     if (!isDev) {
-        autoUpdater.checkForUpdates()
+        // 초기 업데이트 체크
+        setTimeout(() => {
+            checkForUpdatesWithDebounce();
+        }, 5000); // 앱 시작 5초 후 체크
         
         // 1시간마다 업데이트 체크
         setInterval(() => {
-            autoUpdater.checkForUpdates()
-        }, 3600000)
+            checkForUpdatesWithDebounce();
+        }, 3600000);
     }
 })
 
 // 설정 메뉴에서 업데이트 확인
 ipcMain.on('checkForUpdates', () => {
-    autoUpdater.checkForUpdates()
+    checkForUpdatesWithDebounce();
 })
 
 autoUpdater.on('error', (err) => {
     log.error('AutoUpdater 오류:', err)
-    win.webContents.send('autoUpdateNotification', 'error', err)
+    if (win) {
+        win.webContents.send('autoUpdateNotification', 'error', err)
+    }
 })
 
 autoUpdater.on('update-not-available', () => {
     log.info('업데이트 없음')
-    win.webContents.send('autoUpdateNotification', 'noUpdate')
 })

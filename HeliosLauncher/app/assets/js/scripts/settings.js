@@ -1529,7 +1529,7 @@ function populateSettingsUpdateInformation(data){
         
         if(process.platform === 'darwin'){
             settingsUpdateButtonStatus(Lang.queryJS('settings.updates.downloadButton'), false, () => {
-                shell.openExternal(data.darwindownload)
+                shell.openExternal('https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo/releases/latest/download/SpearfishForest4-mac.dmg')
             })
         } else {
             settingsUpdateButtonStatus(Lang.queryJS('settings.updates.downloadingButton'), true)
