@@ -4,7 +4,12 @@
 echo "릴리즈 타입을 선택하세요:"
 echo "1) 정식 릴리즈"
 echo "2) 사전 릴리즈"
-read -p "선택 (1 또는 2): " release_type
+read -p "선택 (엔터: 정식 릴리즈): " release_type
+
+# 엔터 입력 시 정식 릴리즈 선택
+if [ -z "$release_type" ]; then
+    release_type="1"
+fi
 
 # 현재 브랜치 확인
 current_branch=$(git rev-parse --abbrev-ref HEAD)
