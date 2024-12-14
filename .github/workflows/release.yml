@@ -97,6 +97,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # 정식 릴리즈일 때 latest 태그 업데이트
+      - name: Update latest tag
+        if: ${{ !steps.get-version.outputs.is_prerelease }}
+        run: |
+          git tag -f latest
+          git push -f origin latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -110,31 +119,23 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # latest 태그 업데이트 (정식 릴리즈일 때만)
-      - name: Update Latest Tag
-        if: ${{ !steps.get-version.outputs.is_prerelease }}
-        run: |
-          git tag -f latest
-          git push -f origin latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # latest 릴리즈 생성 전에 기존 자산 삭제
-      - name: Delete Latest Release Assets
+      # latest 릴리즈의 기존 자산 삭제
+      - name: Delete latest release assets
         if: ${{ !steps.get-version.outputs.is_prerelease }}
         uses: dev-drprasad/delete-older-releases@v0.2.1
         with:
           keep_latest: 0
+          delete_tags: false
           delete_tag_pattern: latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # latest 릴리즈 생성
-      - name: Create Latest Release
+      # 정식 릴리즈일 때 latest 릴리즈도 생성
+      - name: Create latest release
         if: ${{ !steps.get-version.outputs.is_prerelease }}
         uses: softprops/action-gh-release@v1
         with:
-          name: Latest Release v${{ steps.get-version.outputs.version }}
+          name: Latest Release
           tag_name: latest
           draft: false
           prerelease: false

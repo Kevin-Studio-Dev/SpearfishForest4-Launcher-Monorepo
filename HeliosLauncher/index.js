@@ -26,6 +26,8 @@ autoUpdater.logger.transports.file.level = 'info'
 function initAutoUpdater() {
     autoUpdater.autoDownload = true
     autoUpdater.autoInstallOnAppQuit = true
+    autoUpdater.channel = 'latest'
+    autoUpdater.allowVersionDowngrade = false
     
     // 현재 버전이 사전 릴리즈인지 확인
     const preRelComp = semver.prerelease(app.getVersion())

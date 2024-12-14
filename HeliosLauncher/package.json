@@ -1,6 +1,6 @@
 {
   "name": "spearfishforest4",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "productName": "SpearfishForest4",
   "description": "Modded Minecraft Launcher",
   "author": "Sunghyun Kim",
@@ -56,7 +56,8 @@
         "provider": "github",
         "owner": "Kevin-Studio-Dev",
         "repo": "SpearfishForest4-Launcher-Monorepo",
-        "releaseType": "release"
+        "releaseType": "release",
+        "vPrefixedTagName": true
       }
     ],
     "artifactName": "${productName}-${os}.${ext}",
