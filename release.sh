@@ -24,16 +24,16 @@ if [ "$release_type" = "1" ]; then
         git checkout master
     fi
     branch_prefix=""
-    # releaseType 설정 제거 (GitHub Actions에서 자동으로 처리)
 else
-    if [[ "$current_branch" != prerelease/* ]]; then
+    branch_timestamp=$(date +%y%m%d-%H%M%S)
+    if [[ "$current_branch" == prerelease/* ]]; then
+        echo "새로운 사전 릴리즈 브랜치로 전환합니다..."
+        git checkout -b "prerelease/$branch_timestamp"
+    else
         echo "새로운 사전 릴리즈 브랜치를 생성합니다..."
-        # 브랜치 이름에는 /를 사용할 수 없으므로 다른 형식 사용
-        branch_timestamp=$(date +%y%m%d-%H%M%S)
         git checkout -b "prerelease/$branch_timestamp"
     fi
     branch_prefix="beta."
-    # releaseType 설정 제거 (GitHub Actions에서 자동으로 처리)
 fi
 
 # 현재 버전 가져오기
@@ -53,8 +53,11 @@ if [ "$release_type" = "1" ]; then
         new_version="$version_number"
     fi
 else
+    # 현재 버전에서 기본 버전 추출 (beta. 및 타임스탬프 제거)
+    base_current_version=$(echo "$current_version" | sed -E 's/-beta\.[0-9]+//g')
+    
     # 현재 버전을 . 기준으로 분리하고 패치 버전 증가
-    IFS='.' read -r major minor patch <<< "$current_version"
+    IFS='.' read -r major minor patch <<< "$base_current_version"
     new_patch=$((patch + 1))
     
     read -p "새 버전을 입력하세요 (엔터: $major.$minor.$new_patch) (현재: $current_version): " version_number
