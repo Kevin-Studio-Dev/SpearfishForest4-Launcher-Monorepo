@@ -1,6 +1,6 @@
 {
   "name": "spearfishforest4",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "productName": "SpearfishForest4",
   "description": "Modded Minecraft Launcher",
   "author": "Sunghyun Kim",
@@ -50,12 +50,14 @@
     "directories": {
       "output": "dist"
     },
-    "publish": [{
-      "provider": "github",
-      "owner": "Kevin-Studio-Dev",
-      "repo": "SpearfishForest4-Launcher-Monorepo",
-      "releaseType": "release"
-    }],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Kevin-Studio-Dev",
+        "repo": "SpearfishForest4-Launcher-Monorepo",
+        "releaseType": "release"
+      }
+    ],
     "mac": {
       "category": "public.app-category.games",
       "target": [
