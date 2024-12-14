@@ -26,15 +26,17 @@ autoUpdater.logger.transports.file.level = 'info'
 function initAutoUpdater() {
     autoUpdater.autoDownload = true
     autoUpdater.autoInstallOnAppQuit = true
-    autoUpdater.channel = 'latest'
-    autoUpdater.allowVersionDowngrade = false
     
     // 현재 버전이 사전 릴리즈인지 확인
     const preRelComp = semver.prerelease(app.getVersion())
     if(preRelComp != null && preRelComp.length > 0){
         autoUpdater.allowPrerelease = true
+        autoUpdater.channel = 'prerelease'
+    } else {
+        autoUpdater.channel = 'latest'
     }
-
+    autoUpdater.allowVersionDowngrade = false
+    
     autoUpdater.on('error', (err) => {
         log.error('AutoUpdater 오류:', err)
         win.webContents.send('autoUpdateNotification', 'error', err)

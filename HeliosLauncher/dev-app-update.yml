@@ -1,3 +1,4 @@
-owner: dscalzi
-repo: HeliosLauncher
+owner: Kevin-Studio-Dev
+repo: SpearfishForest4-Launcher-Monorepo
 provider: github
+updaterCacheDirName: spearfishforest4-updater

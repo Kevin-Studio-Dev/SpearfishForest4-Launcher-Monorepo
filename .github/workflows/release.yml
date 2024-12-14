@@ -64,9 +64,10 @@ jobs:
           DEBUG: electron-builder
 
       - name: List dist directory
+        shell: bash
         run: |
           cd HeliosLauncher/dist
-          ls -la
+          dir
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
