@@ -24,6 +24,7 @@ jobs:
 
       - name: Get version
         id: get-version
+        shell: bash
         run: |
           VERSION=$(node -p "require('./HeliosLauncher/package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
@@ -55,6 +56,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           release: true
           package_root: HeliosLauncher
-
+          mac_certs: ${{ secrets.mac_certs }}
+          mac_certs_password: ${{ secrets.mac_certs_password }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
