@@ -55,19 +55,22 @@ jobs:
 
       - name: Update release type for prerelease
         if: ${{ contains(github.ref, 'prerelease/') }}
+        shell: pwsh
         run: |
           cd HeliosLauncher
           # 임시 파일 생성 전 기존 파일이 있다면 제거
-          rm -f package.json.tmp
+          if (Test-Path package.json.tmp) {
+            Remove-Item package.json.tmp
+          }
           jq '.build.publish[0].releaseType = "prerelease"' package.json > package.json.tmp
           # 임시 파일이 정상적으로 생성되었는지 확인
-          if [ -f package.json.tmp ]; then
-            rm package.json
-            mv package.json.tmp package.json
-          else
-            echo "Failed to create temporary package.json file"
+          if (Test-Path package.json.tmp) {
+            Remove-Item package.json
+            Move-Item package.json.tmp package.json
+          } else {
+            Write-Error "Failed to create temporary package.json file"
             exit 1
-          fi
+          }
 
       - name: Build/Release Electron app
         uses: samuelmeuli/action-electron-builder@v1
