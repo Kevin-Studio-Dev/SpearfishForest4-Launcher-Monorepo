@@ -563,16 +563,6 @@
           }
         },
         {
-          "id": "top.theillusivec4:curios:5.11.0+1.20.1@jar",
-          "name": "Curios API",
-          "type": "ForgeMod",
-          "artifact": {
-            "size": 389988,
-            "url": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/SpearfishForest4-1.20.1/forgemods/required/curios-forge-5.11.0+1.20.1.jar",
-            "MD5": "9d752b17b0e6d1e9cfe3ea3a230aaba1"
-          }
-        },
-        {
           "id": "anar4732.dcch:dcch:1@jar",
           "name": "Dont Clear Chat History",
           "type": "ForgeMod",
@@ -940,26 +930,6 @@
             "size": 110583,
             "url": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/SpearfishForest4-1.20.1/forgemods/required/starlight-1.1.2+forge.1cda73c.jar",
             "MD5": "da99a054428fb62342b6767b993c4c8d"
-          }
-        },
-        {
-          "id": "info.u_team.u_team_core:uteamcore:5.1.4.336@jar",
-          "name": "U Team Core",
-          "type": "ForgeMod",
-          "artifact": {
-            "size": 587602,
-            "url": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/SpearfishForest4-1.20.1/forgemods/required/u_team_core-forge-1.20.1-5.1.4.336.jar",
-            "MD5": "97eef15f77c8ba81999a34419909277e"
-          }
-        },
-        {
-          "id": "info.u_team.useful_backpacks:usefulbackpacks:2.0.1.124@jar",
-          "name": "Useful Backpacks",
-          "type": "ForgeMod",
-          "artifact": {
-            "size": 188252,
-            "url": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/SpearfishForest4-1.20.1/forgemods/required/useful_backpacks-forge-1.20.1-2.0.1.124.jar",
-            "MD5": "f5306f9fb7cc771eadaecea9bff28cd4"
           }
         },
         {
@@ -4740,7 +4710,7 @@
           "name": "options.txt",
           "type": "File",
           "artifact": {
-            "size": 7098,
+            "size": 6974,
             "url": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/SpearfishForest4-1.20.1/files/options.txt",
             "path": "options.txt"
           }
