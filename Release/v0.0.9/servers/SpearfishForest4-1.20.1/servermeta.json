@@ -1,11 +1,11 @@
 {
-  "$schema": "file:///Users/hellosunghyun/Documents/Github/SpearfishForest4-Launcher-Monorepo/Release/v0.0.5/schemas/ServerMetaSchema.schema.json",
+  "$schema": "file:///Users/hellosunghyun/Documents/Github/SpearfishForest4-Launcher-Monorepo/Release/v0.0.9/schemas/ServerMetaSchema.schema.json",
   "meta": {
-    "version": "0.0.5",
+    "version": "0.0.9",
     "name": "SpearfishForest4 (Minecraft 1.20.1)",
     "description": "SpearfishForest4 Running Minecraft 1.20.1 (Forge v47.2.20)",
     "icon": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/spearfishforest4-1.20.1/icon.png",
-    "address": "proxy.spearforest.spearfish.mfhz.me:10000",
+    "address": "34.22.71.132:10000",
     "discord": {
       "shortId": "SpearfishForest4",
       "largeImageText": "SpearfishForest4",
