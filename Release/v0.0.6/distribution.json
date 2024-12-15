@@ -933,6 +933,16 @@
           }
         },
         {
+          "id": "info.u_team.u_team_core:uteamcore:5.1.4.336@jar",
+          "name": "U Team Core",
+          "type": "ForgeMod",
+          "artifact": {
+            "size": 587602,
+            "url": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/SpearfishForest4-1.20.1/forgemods/required/u_team_core-forge-1.20.1-5.1.4.336.jar",
+            "MD5": "97eef15f77c8ba81999a34419909277e"
+          }
+        },
+        {
           "id": "info.u_team.useful_backpacks:usefulbackpacks:2.0.1.124@jar",
           "name": "Useful Backpacks",
           "type": "ForgeMod",
