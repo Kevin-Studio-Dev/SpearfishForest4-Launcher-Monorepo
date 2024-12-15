@@ -39,33 +39,61 @@ function setupAutoUpdater(win) {
                         const currentVersion = require('../package.json').version
                         
                         if (semver.gt(latestVersion, currentVersion)) {
-                            // 한 번만 알림을 보내도록 플래그 확인
-                            if (!win.updateNotificationShown) {
-                                win.updateNotificationShown = true
-                                win.webContents.send('autoUpdateNotification', 'update-available', {
-                                    version: latestVersion,
-                                    releaseNotes: data.body || '새로운 업데이트가 있습니다.'
-                                })
-                            }
+                            win.webContents.send('autoUpdateNotification', 'update-available', {
+                                version: latestVersion,
+                                releaseNotes: data.body || '새로운 업데이트가 있습니다.'
+                            })
                         } else {
                             win.webContents.send('autoUpdateNotification', 'update-not-available')
                         }
                     })
                     .catch(err => {
                         console.error('업데이트 확인 중 오류:', err)
-                        win.webContents.send('autoUpdateNotification', 'error')
+                        win.webContents.send('autoUpdateNotification', 'update-not-available')
                     })
                 break
             case 'allowPrereleaseChange':
-                // prerelease 설정 변경
+                autoUpdater.allowPrerelease = data
+                autoUpdater.checkForUpdates()
+                    .catch(err => {
+                        win.webContents.send('autoUpdateNotification', 'realerror', {
+                            error: err,
+                            code: err.code
+                        })
+                    })
                 break
         }
+    })
+
+    // 업데이트 이벤트 리스너
+    autoUpdater.on('checking-for-update', () => {
+        win.webContents.send('autoUpdateNotification', 'checking-for-update')
+    })
+
+    autoUpdater.on('update-not-available', () => {
+        win.webContents.send('autoUpdateNotification', 'update-not-available')
+    })
+
+    autoUpdater.on('error', (err) => {
+        win.webContents.send('autoUpdateNotification', 'realerror', {
+            error: err,
+            code: err.code
+        })
     })
 
     // 초기 업데이트 확인
     win.webContents.once('did-finish-load', () => {
         win.webContents.send('autoUpdateNotification', 'ready')
     })
+
+    // 즉시 업데이트 확인 시작
+    autoUpdater.checkForUpdates()
+        .catch(err => {
+            win.webContents.send('autoUpdateNotification', 'realerror', {
+                error: err,
+                code: err.code
+            })
+        })
 }
 
 function createWindow() {

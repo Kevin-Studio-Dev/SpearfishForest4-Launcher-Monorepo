@@ -1608,14 +1608,6 @@ if (settingsUpdateButton) {
             settingsUpdateButton.disabled = false
         }
 
-        const downloadUpdate = (version) => {
-            if (process.platform === 'darwin') {
-                shell.openExternal(`https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo/releases/download/v${version}/HeliosLauncher-${version}.dmg`)
-            } else {
-                shell.openExternal(`https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo/releases/download/v${version}/HeliosLauncher-${version}.exe`)
-            }
-        }
-
         switch(state) {
             case 'checking-for-update':
                 settingsUpdateButton.innerHTML = '업데이트 확인 중...'
@@ -1624,87 +1616,15 @@ if (settingsUpdateButton) {
             case 'update-available':
                 resetButton()
                 if (process.platform === 'darwin') {
-                    // macOS: 다운로드 여부 확인
                     const response = confirm(`새로운 버전 ${info.version}이(가) 있습니다.\n\n${info.releaseNotes || '새로운 업데이트가 있습니다.'}\n\n지금 다운로드하시겠습니까?`)
                     if (response) {
-                        downloadUpdate(info.version)
-                    }
-                } else {
-                    // Windows: 자동으로 다운로드
-                    downloadUpdate(info.version)
-                }
-                break
-            case 'update-not-available':
-                resetButton()
-                if (process.platform === 'darwin') {
-                    alert('현재 최신 버전을 사용 중입니다.')
-                }
-                break
-            case 'error':
-                resetButton()
-                alert('업데이트 확인 중 오류가 발생했습니다.')
-                break
-            default:
-                resetButton()
-                break
-        }
-    })
-}
-
-let updateDialogShown = false
-// 업데이트 버튼 초기화
-const settingsUpdateButton = document.getElementById('settingsUpdateButton')
-if (settingsUpdateButton) {
-    const originalButtonText = '업데이트 확인'
-    settingsUpdateButton.innerHTML = originalButtonText
-    settingsUpdateButton.onclick = () => {
-        settingsUpdateButton.innerHTML = '업데이트 확인 중...'
-        settingsUpdateButton.disabled = true
-        updateDialogShown = false
-        ipcRenderer.send('autoUpdateAction', 'checkForUpdate')
-    }
-
-    // 업데이트 알림 이벤트 리스너
-    ipcRenderer.on('autoUpdateNotification', (event, state, info) => {
-        const resetButton = () => {
-            settingsUpdateButton.innerHTML = originalButtonText
-            settingsUpdateButton.disabled = false
-        }
-
-        const downloadUpdate = (version) => {
-            if (process.platform === 'darwin') {
-                shell.openExternal(`https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo/releases/download/v${version}/HeliosLauncher-${version}.dmg`)
-            } else {
-                shell.openExternal(`https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo/releases/download/v${version}/HeliosLauncher-${version}.exe`)
-            }
-        }
-
-        switch(state) {
-            case 'checking-for-update':
-                settingsUpdateButton.innerHTML = '업데이트 확인 중...'
-                settingsUpdateButton.disabled = true
-                break
-            case 'update-available':
-                resetButton()
-                if (!updateDialogShown) {
-                    updateDialogShown = true
-                    if (process.platform === 'darwin') {
-                        // macOS: 다운로드 여부 확인
-                        const response = confirm(`새로운 버전 ${info.version}이(가) 있습니다.\n\n${info.releaseNotes || '새로운 업데이트가 있습니다.'}\n\n지금 다운로드하시겠습니까?`)
-                        if (response) {
-                            downloadUpdate(info.version)
-                        }
-                    } else {
-                        // Windows: 자동으로 다운로드
-                        downloadUpdate(info.version)
+                        shell.openExternal(`https://github.com/Kevin-Studio-Dev/SpearfishForest4-Launcher-Monorepo/releases/download/v${info.version}/HeliosLauncher-${info.version}.dmg`)
                     }
                 }
                 break
             case 'update-not-available':
                 resetButton()
-                if (process.platform === 'darwin') {
-                    alert('현재 최신 버전을 사용 중입니다.')
-                }
+                alert('현재 최신 버전을 사용 중입니다.')
                 break
             case 'error':
                 resetButton()
