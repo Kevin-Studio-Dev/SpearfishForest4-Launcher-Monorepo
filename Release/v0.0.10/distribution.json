@@ -12,7 +12,7 @@
       "name": "SpearfishForest4 (Minecraft 1.20.1)",
       "description": "SpearfishForest4 Running Minecraft 1.20.1 (Forge v47.2.20)",
       "icon": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/spearfishforest4-1.20.1/icon.png",
-      "version": "0.0.9",
+      "version": "0.0.10",
       "address": "34.22.71.132:10000",
       "minecraftVersion": "1.20.1",
       "discord": {
@@ -4775,9 +4775,9 @@
           "name": "servers.dat",
           "type": "File",
           "artifact": {
-            "size": 10300,
+            "size": 20508,
             "url": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/SpearfishForest4-1.20.1/files/servers.dat",
-            "MD5": "f21aed5fc21087d6e26c72ea4b4a5c7e",
+            "MD5": "9d696ff5c1d915a48a1f1d60e7ad867b",
             "path": "servers.dat"
           }
         },
