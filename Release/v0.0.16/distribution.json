@@ -12,7 +12,7 @@
       "name": "SpearfishForest4",
       "description": "SpearfishForest4 Running Minecraft 1.20.1 (Forge v47.2.20)",
       "icon": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/spearfishforest4-1.20.1/icon.png",
-      "version": "0.0.15",
+      "version": "0.0.16",
       "address": "proxy.spearforest.spearfish.mfhz.me:10000",
       "minecraftVersion": "1.20.1",
       "discord": {
@@ -4894,9 +4894,9 @@
           "name": "spearforest4_custom_gui_resourcepack.zip",
           "type": "File",
           "artifact": {
-            "size": 266776,
+            "size": 366052,
             "url": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/SpearfishForest4-1.20.1/files/resourcepacks/spearforest4_custom_gui_resourcepack.zip",
-            "MD5": "1a88e157b2248abc128b946a94a6379e",
+            "MD5": "4b262e3b90ee5d69175d127b46c6bd2e",
             "path": "resourcepacks/spearforest4_custom_gui_resourcepack.zip"
           }
         },
