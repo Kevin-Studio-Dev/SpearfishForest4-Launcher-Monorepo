@@ -4894,9 +4894,9 @@
           "name": "spearforest4_custom_gui_resourcepack.zip",
           "type": "File",
           "artifact": {
-            "size": 366052,
+            "size": 350528,
             "url": "https://publish.spearforest.spearfish.mfhz.me/latest/servers/SpearfishForest4-1.20.1/files/resourcepacks/spearforest4_custom_gui_resourcepack.zip",
-            "MD5": "4b262e3b90ee5d69175d127b46c6bd2e",
+            "MD5": "c472f8cfecbdc650dbd7f017675f4e2d",
             "path": "resourcepacks/spearforest4_custom_gui_resourcepack.zip"
           }
         },
